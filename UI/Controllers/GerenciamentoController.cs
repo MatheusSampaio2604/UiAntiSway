@@ -22,6 +22,7 @@ namespace UI.Controllers
         }
 
         [HttpGet]
+        [AuthorizeRoles("Admin")]
         public IActionResult Calibration()
         {
             return View();

@@ -23,8 +23,8 @@ namespace Application.Services
 
         public async Task<bool> RegisterAsync(vmRegisterUser registerUser)
         {
-            var result = await _InterfaceApi.PostAsync<vmRegisterUser, string>($"{routeMgmt}/v1/User/register", registerUser);
-            if (result == "Success") return true;
+            var result = await _InterfaceApi.PostAsync<vmRegisterUser, LoginResult>($"{routeMgmt}/v1/User/register", registerUser);
+            if (result.Succeeded) return true;
             else return false;
 
         }
