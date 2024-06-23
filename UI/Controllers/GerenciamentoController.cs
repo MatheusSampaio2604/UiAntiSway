@@ -1,9 +1,11 @@
 ﻿using Application.Services.Interface;
 using Application.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using UI.Models.ActionsFilter;
 
 namespace UI.Controllers
 {
+    [AuthorizeToken]
     public class GerenciamentoController : Controller
     {
         private readonly InterCalibrationService _interCalibrationService;

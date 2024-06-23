@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using UI.Models;
+using UI.Models.ActionsFilter;
 
 namespace UI.Controllers
 {
@@ -13,6 +14,7 @@ namespace UI.Controllers
             _logger = logger;
         }
 
+        [AuthorizeToken]
         public IActionResult Index()
         {
             return View();

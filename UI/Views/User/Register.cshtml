@@ -1,4 +1,4 @@
-﻿@model Application.ViewModels.vmLoginUser
+﻿@model Application.ViewModels.vmRegisterUser
 
 @{
     Layout = "";
@@ -9,12 +9,12 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login - Janus Automation</title>
+    <title>Register - Janus Automation</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <link href="~/css/layoutloginregister.css" rel="stylesheet" />
+
 </head>
 <body>
 
@@ -24,13 +24,13 @@
                 <h3 class="navbar-brand text-white"><b>Anti-Sway</b></h3>
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
-                        <a class="nav-link text-white" asp-area="" asp-controller="User" asp-action="Register">Register</a>
+                        <a class="nav-link text-white" asp-area="" asp-controller="User" asp-action="Login">Login</a>
                     </li>
                 </ul>
             </div>
         </nav>
     </header>
-    
+
     <main class="pb-3">
         <div class="vh-100">
             <div class="container-fluid h-custom">
@@ -43,9 +43,15 @@
                         <form method="post">
 
                             <div data-mdb-input-init class="form-group form-outline mb-4">
-                                <label class="form-label" asp-for="UserName">Username or email</label>
-                                <input class="form-control form-control-lg" asp-for="UserName" type="text"
-                                       placeholder="Enter a email or username address" required />
+                                <label class="form-label" asp-for="Name">Username</label>
+                                <input class="form-control form-control-lg" asp-for="Name" type="text"
+                                       placeholder="Enter a username" required />
+                            </div>
+
+                            <div data-mdb-input-init class="form-group form-outline mb-4">
+                                <label class="form-label" asp-for="Email">Email</label>
+                                <input class="form-control form-control-lg" asp-for="Email" type="text"
+                                       placeholder="Enter a email" required />
                             </div>
 
                             <div data-mdb-input-init class="form-group form-outline mb-3">
@@ -54,17 +60,13 @@
                                        placeholder="Enter password" required />
                             </div>
 
-                            <div class="d-flex justify-content-between align-items-center">
-                                <a href="#!" class="text-body">Forgot password?</a>
-                            </div>
-
                             <div class="text-center text-lg-start mt-4 pt-2">
                                 <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-lg"
                                         style="padding-left: 2.5rem; padding-right: 2.5rem;">
                                     Login
                                 </button>
                                 <p class="small fw-bold mt-2 pt-1 mb-0">
-                                    Don't have an account? <a asp-action="Register" asp-controller="User" class="link-danger">Register</a>
+                                    Have an account? <a asp-action="Login" asp-controller="User" class="link-danger">Login</a>
                                 </p>
                             </div>
 
