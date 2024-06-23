@@ -39,6 +39,7 @@ namespace UI.Controllers
                         Expires = DateTimeOffset.UtcNow.AddHours(8)
                     };
                     Response.Cookies.Append("token", loginResult.Token, cookieOptions);
+                    Response.Cookies.Append("name", loginResult.Name, cookieOptions);
 
                     return RedirectToAction("Index", "Home");
                 }
