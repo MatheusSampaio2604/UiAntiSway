@@ -36,17 +36,9 @@ namespace UI.Controllers
 
                 if (loginResult.Succeeded)
                 {
-                    var cookieOptions = new CookieOptions
-                    {
-                        HttpOnly = true,
-                        Secure = true,
-                        Expires = DateTimeOffset.UtcNow.AddHours(8)
-                    };
-                    Response.Cookies.Append("token", loginResult.Token, cookieOptions);
-                    Response.Cookies.Append("name", loginResult.Name, cookieOptions);
+                    var cookieOptions = CreateCookieOptions();
 
-                    var roles = GetRolesFromToken(loginResult.Token);
-                    Response.Cookies.Append("roles", string.Join(",", roles), cookieOptions);
+                    CreateCookieUser(loginResult, cookieOptions);
 
                     return RedirectToAction("Index", "Home");
                 }
@@ -59,12 +51,41 @@ namespace UI.Controllers
             }
         }
 
+        private CookieOptions CreateCookieOptions()
+        {
+            return new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                Expires = DateTimeOffset.UtcNow.AddHours(8)
+            };
+        }
+
+        private void CreateCookieUser(LoginResult loginResult, CookieOptions cookieOptions)
+        {
+            Response.Cookies.Append("token", loginResult.Token, cookieOptions);
+            Response.Cookies.Append("name", loginResult.Name, cookieOptions);
+
+            var roles = GetRolesFromToken(loginResult.Token);
+            Response.Cookies.Append("roles", string.Join(",", roles), cookieOptions);
+        }
+
         private IEnumerable<string> GetRolesFromToken(string token)
         {
             JwtSecurityTokenHandler handler = new();
             var jwtToken = handler.ReadJwtToken(token);
             var roles = jwtToken.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value);
             return roles;
+        }
+
+        [HttpGet]
+        public IActionResult Logout()
+        {
+            Response.Cookies.Delete("token");
+            Response.Cookies.Delete("name");
+            Response.Cookies.Delete("roles");
+
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpGet]
@@ -88,17 +109,9 @@ namespace UI.Controllers
 
                     if (loginResult.Succeeded)
                     {
-                        var cookieOptions = new CookieOptions
-                        {
-                            HttpOnly = true,
-                            Secure = true,
-                            Expires = DateTimeOffset.UtcNow.AddHours(8)
-                        };
-                        Response.Cookies.Append("token", loginResult.Token, cookieOptions);
-                        Response.Cookies.Append("name", loginResult.Name, cookieOptions);
+                        var cookieOptions = CreateCookieOptions();
 
-                        var roles = GetRolesFromToken(loginResult.Token);
-                        Response.Cookies.Append("roles", string.Join(",", roles), cookieOptions);
+                        CreateCookieUser(loginResult, cookieOptions);
 
                         return RedirectToAction("Index", "Home");
                     }

@@ -15,8 +15,8 @@ namespace UI.Controllers
             _logger = logger;
         }
 
-        [AuthorizeToken]
-        [AuthorizeRoles("Admin", "User")]
+        //[AuthorizeToken]
+        //[AuthorizeRoles("Admin", "User")]
         public IActionResult Index()
         {
             return View();

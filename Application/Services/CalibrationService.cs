@@ -14,7 +14,7 @@ namespace Application.Services
     {
         private readonly InterGeneralApi _GeneralApi;
 
-        readonly string routePlc = String.Concat(ApiRoutePlc.Link, ApiRoutePlc.Port, ApiRoutePlc.Api);
+        readonly string routePython = String.Empty;
 
         public CalibrationService(InterGeneralApi GeneralApi)
         {

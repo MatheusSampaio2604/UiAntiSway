@@ -25,17 +25,17 @@ namespace UI.Models.ActionsFilter
         {
             var user = context.HttpContext.User;
             var rolesFromCookie = GetRolesFromCookie(context.HttpContext);
-            
-            foreach (var role in _roles)
+            if (rolesFromCookie.Count() > 0)
             {
-                if (rolesFromCookie.Contains(role))
-                {
-                    return; // Autorização bem-sucedida
-                }
-            }
+                foreach (var role in _roles)
+                    if (rolesFromCookie.Contains(role))
+                        return; // Autorização bem-sucedida
 
-            // Se não pertence a nenhum dos roles especificados, nega o acesso
-            context.Result = new ForbidResult();
+                // Se não pertence a nenhum dos roles especificados, nega o acesso
+                context.Result = new ForbidResult();
+            }
+            else
+                context.Result = new RedirectToActionResult("Login", "User", null);
         }
 
         private string[] GetRolesFromCookie(HttpContext context)

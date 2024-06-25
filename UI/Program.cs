@@ -19,44 +19,42 @@ namespace UI
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
-            //builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            //.AddJwtBearer(options =>
-            //{
-            //    options.Authority = String.Concat(builder.Configuration.GetSection("Mgmt:Route").Value, builder.Configuration.GetSection("Mgmt:Port").Value);
-            //    options.Audience = "your-website.com";
-            //    options.TokenValidationParameters = new TokenValidationParameters
-            //    {
-            //        ValidateIssuer = true,
-            //        ValidateAudience = true,
-            //        ValidateLifetime = true,
-            //        ValidateIssuerSigningKey = true,
-            //        ValidIssuer = "your-website.com",
-            //        ValidAudience = "your-website.com",
-            //        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("&secret-key&4002-8922$FromJanusAutomation$"))
-            //    };
-
-            //    options.Events = new JwtBearerEvents
-            //    {
-            //        OnMessageReceived = context =>
-            //        {
-            //            context.Token = context.Request.Cookies["token"];
-            //            return Task.CompletedTask;
-            //        }
-            //    };
-            //});
-
-
-            builder.Services.AddAuthorization();
-
-
             builder.Services.AddAuthorization(opt =>
             {
                 opt.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
                 opt.AddPolicy("UserOnly", policy => policy.RequireRole("User"));
             });
 
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.Authority = String.Concat(builder.Configuration.GetSection("Mgmt:Route").Value, builder.Configuration.GetSection("Mgmt:Port").Value);
+                options.Audience = "your-website.com";
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = String.Concat(builder.Configuration.GetSection("Mgmt:Route").Value, builder.Configuration.GetSection("Mgmt:Port").Value),
+                    ValidAudience = "https://localhost:7026/",
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("&secret-key&4002-8922$FromJanusAutomation$"))
+                };
+            
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        context.Token = context.Request.Cookies["token"];
+                        return Task.CompletedTask;
+                    }
+                };
+            });
+
             //builder.Services.Configure<ApiRouteMgmt>(builder.Configuration.GetSection("Mgmt"));
             //builder.Services.Configure<ApiRoutePlc>(builder.Configuration.GetSection("Plc"));
+
+  
 
             builder.Services.AddHttpClient<InterGeneralApi, GeneralApi>();
 
@@ -70,17 +68,15 @@ namespace UI
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
-
                 app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
+                app.UseExceptionHandler("/Home/Error");
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

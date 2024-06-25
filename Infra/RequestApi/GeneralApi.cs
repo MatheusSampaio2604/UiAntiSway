@@ -24,6 +24,16 @@ namespace Infra.RequestApi
             if (response.IsSuccessStatusCode)
             {
                 string responseData = await response.Content.ReadAsStringAsync();
+                if (typeof(TResponse) == typeof(string))
+                {
+                    return (TResponse)(object)responseData;
+                }
+
+                if (typeof(TResponse) == typeof(bool))
+                {
+                    return (TResponse)(object) Convert.ToBoolean(responseData);
+                }
+
                 return JsonConvert.DeserializeObject<TResponse>(responseData);
             }
             else
