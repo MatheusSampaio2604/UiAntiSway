@@ -19,6 +19,8 @@ namespace UI
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
+            builder.WebHost.UseUrls("http://localhost:5200");
+
             //builder.Services.AddAuthorization(opt =>
             //{
             //    opt.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
@@ -81,8 +83,8 @@ namespace UI
 
             app.UseRouting();
 
-            app.UseAuthorization();
-            app.UseAuthentication();
+            //app.UseAuthorization();
+            //app.UseAuthentication();
 
             app.MapControllerRoute(
                 name: "default",

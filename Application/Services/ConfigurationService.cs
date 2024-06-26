@@ -21,16 +21,16 @@ namespace Application.Services
             _GeneralApi = generalApi;
         }
 
-        public async Task<vmWriteReadPlc> ReadPlcAsync(string address)
+        public async Task<vmWritePlc> ReadPlcAsync(string address)
         {
-            var dados = await _GeneralApi.GetAsync<vmWriteReadPlc>($"{routeMgmt}/v1/Plc/getValueFromPlc");
-            
+            var dados = await _GeneralApi.GetAsync<vmWritePlc>($"{routeMgmt}/v1/Plc/getValueFromPlc");
+
             return dados;
         }
 
-        public async Task<bool> WritePlcAsync(vmWriteReadPlc plcData)
+        public async Task<bool> WritePlcAsync(List<vmApiRequestWritePlc> plcData)
         {
-            var dados = await _GeneralApi.PostAsync<vmWriteReadPlc, bool>($"/v1", plcData);
+            var dados = await _GeneralApi.PostAsync<List<vmApiRequestWritePlc>, bool>($"{routeMgmt}/v1/Plc/SetValueToPlc", plcData);
 
             return dados;
         }
@@ -43,16 +43,16 @@ namespace Application.Services
             return dados;
         }
 
-        public async  Task<vmPlcSettings> GetSettingsPlc()
+        public async Task<vmPlcSettings> GetSettingsPlc()
         {
             vmPlcSettings? dados = await _GeneralApi.GetAsync<vmPlcSettings>($"{routeMgmt}/v1/Plc/GetSettingsPlc");
 
             return dados;
         }
 
-        public async Task<vmPlcSettings> UpdateSettingsPlc(vmPlcSettings settings)
+        public async Task<bool> UpdateSettingsPlc(vmPlcSettings settings)
         {
-            var dados = await _GeneralApi.PostAsync<vmPlcSettings, vmPlcSettings>($"{routeMgmt}/v1/Plc/UpdateSettingsPlc", settings);
+            var dados = await _GeneralApi.PostAsync<vmPlcSettings, bool>($"{routeMgmt}/v1/Plc/UpdateSettingsPlc", settings);
 
             return dados;
         }
@@ -62,6 +62,26 @@ namespace Application.Services
             bool dados = await _GeneralApi.GetAsync<bool>($"{routeMgmt}/v1/Plc/TestConnectionPlc");
 
             return dados;
+        }
+
+        public async Task<vmPlc> DetailTagInList(int idTag)
+        {
+            var item = await _GeneralApi.GetAsync<List<vmPlc>>($"{routeMgmt}/v1/Plc/getListPlc");
+
+            return item.FirstOrDefault(x => x.Id == idTag);
+        }
+
+        public async Task<bool> AddTagInList(vmPlc plc)
+        {
+            var item = await _GeneralApi.PostAsync<vmPlc, bool>($"{routeMgmt}/v1/Plc/AddTagInList", plc);
+            return item;
+        }
+
+        public async Task<bool> UpdateTagInList(vmPlc plc)
+        {
+            var item = await _GeneralApi.PostAsync<vmPlc, bool>($"{routeMgmt}/v1/Plc/UpdateTagInList", plc);
+
+            return item;
         }
     }
 }

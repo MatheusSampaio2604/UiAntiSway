@@ -12,12 +12,15 @@ namespace Application.Services.Interface
 {
     public interface InterConfigurationService
     {
-        Task<vmWriteReadPlc> ReadPlcAsync(string address);
-        Task<bool> WritePlcAsync(vmWriteReadPlc plcData);
+        Task<vmWritePlc> ReadPlcAsync(string address);
+        Task<bool> WritePlcAsync(List<vmApiRequestWritePlc> plcData);
         Task<List<vmPlc>> GetListPlc();
+        Task<vmPlc> DetailTagInList(int idTag);
+        Task<bool> UpdateTagInList(vmPlc plc);
+        Task<bool> AddTagInList(vmPlc plc);
 
         Task<vmPlcSettings> GetSettingsPlc();
-        Task<vmPlcSettings> UpdateSettingsPlc(vmPlcSettings settings);
+        Task<bool> UpdateSettingsPlc(vmPlcSettings settings);
 
         Task<bool> TestConnectionPlc();
     }

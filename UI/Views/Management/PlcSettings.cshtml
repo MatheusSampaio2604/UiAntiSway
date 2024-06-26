@@ -22,74 +22,87 @@
         height: 40px;
     }
 
+    .card-header {
+        background-color: gray;
+        color: #fff;
+    }
+
+    .card-body {
+        background-color: #e3e0e0;
+    }
 </style>
 
-
-<h1 class="text-center">PLC SETTING</h1>
-
-<hr />
-
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success" role="alert">
-        @TempData["SuccessMessage"]
-    </div>
-    await Task.Delay(1000);
-    TempData["SuccessMessage"] = null;
-}
-
-<div class="row">
-    <form asp-action="PlcSettings" method="post">
-        <div class="col-md-12 row">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label asp-for="Ip1" class="control-label"></label>
-                    <input asp-for="Ip1" class="form-control" />
-                    <span asp-validation-for="Ip1" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="CpuType" class="control-label"></label>
-                    <select asp-for="CpuType" class="form-select bg-light text-dark" id="CpuType"
-                            asp-items="@(ViewBag.ListCpuType as SelectList)"
-                            aria-describedby="ListCpuType">
-                        <option selected disabled value="">Selecione</option>
-                    </select>
-                    <span asp-validation-for="CpuType" class="text-danger"></span>
-                </div>
-            </div>
-
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label asp-for="Rack" class="control-label"></label>
-                    <input asp-for="Rack" type="number" min="0" max="100" step="1" onkeydown="return false;" inputmode="numeric" class="form-control" />
-                    <span asp-validation-for="Rack" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="Slot" class="control-label"></label>
-                    <input asp-for="Slot" type="number" min="0" max="100" step="1" onkeydown="return false;" inputmode="numeric" class="form-control" />
-                    <span asp-validation-for="Slot" class="text-danger"></span>
-                </div>
-            </div>
-
-            <div class="form-group row text-center">
-                <div class="col-md-6">
-                    <input type="submit" value="Save" class="btn button btn-success mt-3" />
-                </div><div class="col-md-6">
-                    <input id="testConn" type="button" value="Test Connection" class="btn button btn-outline-secondary custom-btn mt-3" />
-                    <p>*After modifying, save and then test!</p>
-                </div>
-            </div>
+<div class="container mt-5 ">
+    <div class="card d-flex">
+        <div class="card-header text-center">
+            <h1>PLC SETTING</h1>
         </div>
-    </form>
+        <div class="card-body">
+            <form asp-action="PlcSettings" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="Ip1" class="control-label"></label>
+                            <input asp-for="Ip1" class="form-control" />
+                            <span asp-validation-for="Ip1" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="CpuType" class="control-label"></label>
+                            <select asp-for="CpuType" class="form-select bg-light text-dark" id="CpuType"
+                                    asp-items="@(ViewBag.ListCpuType as SelectList)"
+                                    aria-describedby="ListCpuType">
+                                <option selected disabled value="">Select one</option>
+                            </select>
+                            <span asp-validation-for="CpuType" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="Rack" class="control-label"></label>
+                            <input asp-for="Rack" type="number" min="0" max="100" step="1" onkeydown="return false;" inputmode="numeric" class="form-control" />
+                            <span asp-validation-for="Rack" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Slot" class="control-label"></label>
+                            <input asp-for="Slot" type="number" min="0" max="100" step="1" onkeydown="return false;" inputmode="numeric" class="form-control" />
+                            <span asp-validation-for="Slot" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row text-center mt-3">
+                    <div class="col-md-6">
+                        <input type="submit" value="Save" class="btn button btn-success" />
+                    </div>
+                    <div class="col-md-6">
+                        <input id="testConn" type="button" value="Test Connection" class="btn button btn-outline-secondary custom-btn" />
+                        <p class="mt-2">*After modifying, save and then test!</p>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
+
 <script>
     document.getElementById('testConn').addEventListener('click', async function () {
         var btn = this;
+        var counter = 15;
 
-        btn.value = 'Await';
+        btn.value = 'Await ' + counter + '...';
         btn.classList.remove('btn-outline-secondary', 'btn-warning', 'btn-success', 'btn-danger');
         btn.classList.add('btn-warning');
+
+        var interval = setInterval(function () {
+            counter--;
+            btn.value = 'Await ' + counter + '...';
+            if (counter <= 0) {
+                clearInterval(interval);
+            }
+        }, 1000);
+
 
         try {
             const response = await fetch('@Url.Action("TestConnectionPlc")', {
@@ -103,6 +116,8 @@
                 throw new Error('Connection Error');
             }
 
+            clearInterval(interval);
+
             btn.value = 'Successfully';
             btn.classList.remove('btn-outline-secondary', 'btn-warning', 'btn-danger');
             btn.classList.add('btn-success');
@@ -112,6 +127,8 @@
                 btn.classList.remove('btn-success');
             }, 5000);
         } catch (error) {
+            clearInterval(interval);
+
             btn.value = 'Unsuccessfully';
             btn.classList.remove('btn-outline-secondary', 'btn-success', 'btn-warning');
             btn.classList.add('btn-danger');
@@ -123,5 +140,4 @@
             }, 5000);
         }
     });
-
 </script>

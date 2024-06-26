@@ -6,10 +6,17 @@ using System.Threading.Tasks;
 
 namespace Application.ViewModels
 {
-    public class vmWriteReadPlc
+    public class vmWritePlc
     {
-        public required string AddressPlc { get; set; }
-        public required string Type { get; set; }
-        public object? Value { get; set; }
+        public int Id { get; set; }
+        public string? Type { get; set; }
+        public string? Value { get; set; }
+    }
+
+    public class vmApiRequestWritePlc
+    {
+        public string? AddressPlc { get; set; }
+        public string? Type { get; set; }
+        public string? Value { get; set; }
     }
 }

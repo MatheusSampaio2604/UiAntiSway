@@ -9,7 +9,7 @@ namespace Application.Services.Interface
 {
     public interface InterCalibrationService
     {
-        Task<vmCalibrationCamera> GetCalibrationCameraAsync(string address);
+        Task<vmCalibrationCamera> GetCalibrationCameraAsync();
         Task<vmCalibrationCamera> SetCalibrationCameraAsync(vmCalibrationCamera calibrationCamera);
     }
 }

@@ -5,9 +5,60 @@
 }
 
 <style>
-    #logoNav{
+
+    #logoNav {
         height: 35px;
     }
+
+    .navbar {
+        background-color: rgba(0, 0, 0, 0.98) !important;
+    }
+
+        .navbar a {
+            color: rgba(255, 255, 255, 0.9) !important;
+            font-family: "Montserrat", sans-serif;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            letter-spacing: 0.09375rem;
+            position: relative;
+            text-transform: uppercase;
+        }
+
+        .navbar ul li {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1) !important;
+        }
+
+    .dropdown-menu {
+        background-color: black !important;
+    }
+
+        .dropdown-menu .nav-link {
+            color: white !important;
+        }
+
+    .footer {
+        background-color: rgba(0, 0, 0, 0.98) !important;
+        font-family: "Montserrat", sans-serif;
+        font-size: 0.6875rem;
+        font-weight: 600;
+        letter-spacing: 0.09375rem;
+        position: relative;
+        text-transform: uppercase;
+    }
+
+        .footer a {
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+
+        .footer b {
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+
 </style>
 
 <!DOCTYPE html>
@@ -16,58 +67,52 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Janus Automation</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    @* <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" /> *@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/UI.styles.css" asp-append-version="true" />
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
 </head>
 <body>
 
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light  border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index"><b><img id="logoNav" src="~/imgs/janus-logo-nav.png" /></b></a>
+                @* <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index"><b><img id="logoNav" src="~/imgs/janus-logo-nav.png" /></b></a> *@
+                <a class="navbar-brand" asp-area="" asp-controller="Management" asp-action="Monitoring"><b><img id="logoNav" src="/imgs/janus-logo-nav-pb.png" /></b></a>
                 @*       @if (isAuthenticated)
                 { *@
 
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Management" asp-action="Monitoring">Monitoring</a>
+                            <a class="nav-link " asp-area="" asp-controller="Management" asp-action="Monitoring">Monitoring</a>
                         </li>
-                        <li><hr class="dropdown-divider"></li>
+
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Management" asp-action="Calibration">Calibration</a>
+                            <a class="nav-link " asp-area="" asp-controller="Management" asp-action="Calibration">Calibration</a>
                         </li>
 
                         <li>
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Management" asp-action="Configuration">Plc List</a>
+                            <a class="nav-link " asp-area="" asp-controller="Management" asp-action="TagList">Plc list</a>
                         </li>
                         <li>
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Management" asp-action="PlcSettings">Plc Setting</a>
+                            <a class="nav-link " asp-area="" asp-controller="Management" asp-action="PlcSettings">Plc Setting</a>
                         </li>
 
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Hi! Your name here</a>
                             <ul class="dropdown-menu">
                                 <li>
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Management" asp-action="Configuration">More Configurations Here!</a>
+                                    <a class="nav-link" asp-area="" asp-controller="Management" asp-action="TagList">More Configurations Here!</a>
                                 </li>
                                 <li>
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Management" asp-action="PlcSettings">Plc Setting</a>
+                                    <a class="nav-link " asp-area="" asp-controller="Management" asp-action="TagList">Tag list</a>
+                                </li>
+                                <li>
+                                    <a class="nav-link " asp-area="" asp-controller="Management" asp-action="PlcSettings">Plc Setting</a>
                                 </li>
                             </ul>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link btn btn-link text-dark rounded-circle" asp-area="" asp-controller="User" asp-action="Logout">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
-                                    <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z" />
-                                    <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z" />
-                                </svg>
-                            </a>
                         </li>
                     </ul>
                 </div>
@@ -77,34 +122,72 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1 ">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Login">Login</a>
+                            <a class="nav-link" asp-area="" asp-controller="User" asp-action="Login" title="Login user">Login</a>
                         </li>
-                       @*  <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Register">Register</a>
+                        @*  <li class="nav-item">
+                        <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Register">Register</a>
                         </li> *@
+
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-link text-dark rounded-circle" asp-area="" asp-controller="User" asp-action="Logout" title="Logout">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z" />
+                                    <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z" />
+                                </svg>
+                            </a>
+                        </li>
                     </ul>
                 </div>
                 @* } *@
             </div>
         </nav>
     </header>
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="d-flex justify-content-center">
+            <div class="alert alert-success text-center" role="alert">
+                @TempData["SuccessMessage"]
+            </div>
+        </div>
+        TempData["SuccessMessage"] = null;
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="d-flex justify-content-center">
+            <div class="alert alert-danger text-center" role="alert">
+                @TempData["ErrorMessage"]
+            </div>
+        </div>
+        TempData["ErrorMessage"] = null;
+    }
 
-
-    <div class="container">
+    <div class="container pb-5">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="border-top footer text-muted  text-center">
         <div class="container">
-            &copy; @DateTime.Now.Year - Janus Automation Ltda. - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <b>&copy; @DateTime.Now.Year - Janus Automation Ltda. - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a></b>
         </div>
     </footer>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+<script>
+    function closeModal() {
+        $('#detailsModal').modal('hide');
+    }
+
+    setTimeout(function () {
+        document.querySelectorAll('.alert').forEach(alert => alert.remove());
+    }, 10000);
+</script>

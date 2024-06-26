@@ -21,9 +21,9 @@ namespace Application.Services
             _GeneralApi = GeneralApi;
         }
 
-        public async Task<vmCalibrationCamera> GetCalibrationCameraAsync(string address)
+        public async Task<vmCalibrationCamera> GetCalibrationCameraAsync()
         {
-            var dados = await _GeneralApi.GetAsync<dynamic>($"/v1");
+            var dados = await _GeneralApi.GetAsync<dynamic>($"/v1"); //route camera here!
             vmCalibrationCamera calibrationCamera = new();
             return calibrationCamera;
         }
