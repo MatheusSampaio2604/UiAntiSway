@@ -4,6 +4,12 @@
     // var isAuthenticated = !string.IsNullOrEmpty(token);
 }
 
+<style>
+    #logoNav{
+        height: 35px;
+    }
+</style>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,7 +28,7 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index"><b>Anti-Sway</b></a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index"><b><img id="logoNav" src="~/imgs/janus-logo-nav.png" /></b></a>
                 @*       @if (isAuthenticated)
                 { *@
 
@@ -73,9 +79,9 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Login">Login</a>
                         </li>
-                        <li class="nav-item">
+                       @*  <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Register">Register</a>
-                        </li>
+                        </li> *@
                     </ul>
                 </div>
                 @* } *@

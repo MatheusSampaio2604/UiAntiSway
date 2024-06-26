@@ -10,7 +10,7 @@ namespace Application.ViewModels
 {
     public class vmPlcSettings
     {
-        [DisplayName("IP")]
+        [DisplayName("IP Connection")]
         [Required(ErrorMessage = "Required!")]
         public required string Ip1 { get; set; }
 
