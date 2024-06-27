@@ -23,7 +23,7 @@ namespace Application.Services
 
         public async Task<vmWritePlc> ReadPlcAsync(string address)
         {
-            var dados = await _GeneralApi.GetAsync<vmWritePlc>($"{routeMgmt}/v1/Plc/getValueFromPlc");
+            var dados = await _GeneralApi.GetAsync<vmWritePlc>($"{routeMgmt}/v1/Plc/getValueFromPlc/{address}");
 
             return dados;
         }

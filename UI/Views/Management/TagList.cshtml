@@ -44,10 +44,16 @@
             <div class="row mb-3">
 
                 <div class="col-md-6">
-                    <h2>Tag's</h2>
+                    <h2>Plc's</h2>
                 </div>
                 <div class="col-md-6 text-end">
                     <button class="btn btn-outline-secondary add-button">Add tag</button>
+                    <a href="#" class=" spinner-border spinner-border-sm update-values" title="Update all tag values" role="button">
+                        <span class="visually-hidden">Loading...</span>
+                    </a>
+
+                    @* <button class="btn btn-warning update-values">Update</button> *@
+
                 </div>
             </div>
 
@@ -57,6 +63,7 @@
                     <thead>
                         <tr>
                             <th hidden>Id</th>
+                            <th hidden>Address</th>
                             <th>Name</th>
                             <th>Type</th>
                             <th>Last Value</th>
@@ -68,6 +75,7 @@
                         {
                             <tr>
                                 <td hidden>@plc.Id</td>
+                                <td hidden>@plc.AddressPlc</td>
                                 <td width="53%">@plc.Name</td>
                                 <td width="7%">@plc.Type</td>
                                 <td width="15%">
@@ -92,7 +100,7 @@
                                 </td>
                                 <td width="25%">
                                     <button class="btn btn-warning set-value-button">Set value</button>
-                                    <button class="btn btn-secondary details-button">Edit tag</button>
+                                    <button class="btn btn-secondary details-button">Edit plc</button>
                                 </td>
                             </tr>
                         }
@@ -130,6 +138,51 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
+
+            $('.update-values').on('click', function () {
+                try {
+                    var listAddress = [];
+
+                    $('#plcTable tbody tr').each(function () {
+                        var id = $(this).find('td:first').text().trim();
+                        var address = $(this).find('td:nth-child(2)').text().trim();
+
+                        listAddress.push(address);
+                    });
+
+                    console.warn(listAddress);
+
+                    $.ajax({
+                        url: '@Url.Action("GetValueFromPlc")',
+                        type: 'POST',
+                        data: {
+                            address: listAddress
+                        },
+                        success: function (response) {
+                            updateTableValues(data);
+                        },
+                        error: function (xhr, status, error) {
+
+                        }
+                    });
+
+                } catch (error) {
+                    console.error('Error fetching PLC values:', error)
+                }
+            });
+
+            function updateTableValues(data) {
+                $('#plcTable tbody tr').each(function () {
+                    var id = $(this).find('td:first').text().trim();
+                    var address = $(this).find('td:nth-child(2)').text().trim();
+
+                    var plc = data.find(x => x.Id == id && x.AddressPlc == address);
+                    if (plc) {
+                        $(this).find('td:nth-child(5)').html(plc.Value);
+                    }
+                });
+            }
+
             var table = new DataTable('#plcTable', {
                 "language": {
                     "url": "https://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/English.json",
@@ -141,10 +194,7 @@
                 "responsive": true
             });
 
-
-
             $('.set-value-button').on('click', function () {
-
                 var row = $(this).closest('tr');
                 var id = row.find('td:eq(0)').text();
                 var type = row.find('td:eq(2)').text();
@@ -170,6 +220,7 @@
                         window.location.href = '@Url.Action("TagList", "Management")';
                     },
                     error: function (xhr, status, error) {
+                        window.location.href = '@Url.Action("TagList", "Management")';
                     }
                 });
             });

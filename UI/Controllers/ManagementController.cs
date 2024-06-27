@@ -47,9 +47,7 @@ namespace UI.Controllers
         public async Task<IActionResult> TagList()
         {
             List<vmPlc>? listPlc = await _interConfigurationService.GetListPlc();
-
             vmPlcs = listPlc;
-
             return View(listPlc);
         }
 
@@ -65,11 +63,17 @@ namespace UI.Controllers
         public IActionResult AddTagInList(vmPlc plc)
         {
             if (!ModelState.IsValid)
-            {
                 return View(plc);
+
+            try
+            {
+                var item = _interConfigurationService.AddTagInList(plc);
+                return Redirect("TagList");
             }
-            var item = _interConfigurationService.AddTagInList(plc);
-            return Redirect("TagList");
+            catch
+            {
+                return Redirect("TagList");
+            }
         }
 
 
@@ -95,11 +99,16 @@ namespace UI.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateTagInList(vmPlc plc)
         {
-            bool item = await _interConfigurationService.UpdateTagInList(plc);
-
-            TempDataRequest(item);
-
-            return Redirect("TagList");
+            try
+            {
+                bool item = await _interConfigurationService.UpdateTagInList(plc);
+                TempDataRequest(item);
+                return Redirect("TagList");
+            }
+            catch
+            {
+                return View(plc);
+            }
         }
 
         /// <summary>
@@ -123,9 +132,15 @@ namespace UI.Controllers
         //[AuthorizeRoles("Admin")]
         public async Task<IActionResult> Calibration(vmCalibrationCamera calibrationCamera)
         {
-            await _interCalibrationService.SetCalibrationCameraAsync(calibrationCamera);
-
-            return RedirectToAction("", "");
+            try
+            {
+                await _interCalibrationService.SetCalibrationCameraAsync(calibrationCamera);
+                return RedirectToAction("", "");
+            }
+            catch
+            {
+                return View(calibrationCamera);
+            }
         }
 
         /// <summary>
@@ -203,35 +218,61 @@ namespace UI.Controllers
         [HttpPost]
         public async Task<IActionResult> SetValueToPlc(List<vmWritePlc> vmWrite)
         {
-            List<vmApiRequestWritePlc> vmApiRequest = new();
+            if (vmWrite == null || !vmWrite.Any())
+                return BadRequest("No data received.");
+
             try
             {
+                List<vmApiRequestWritePlc> vmApiRequest = [];
+
                 foreach (var item in vmWrite)
                 {
                     var plcData = await _interConfigurationService.DetailTagInList(item.Id);
+
                     vmApiRequest.Add(new vmApiRequestWritePlc
                     {
                         AddressPlc = plcData.AddressPlc,
                         Type = item.Type,
                         Value = item.Value,
                     });
+
+                    plcData.Value = item.Value;
+                    await _interConfigurationService.UpdateTagInList(plcData);
                 }
                 var resp = await _interConfigurationService.WritePlcAsync(vmApiRequest);
-
-                foreach (var item in vmWrite)
-                {
-                    vmPlc plc = await _interConfigurationService.DetailTagInList(item.Id);
-                    plc.Value = item.Value;
-                    var update = await _interConfigurationService.UpdateTagInList(plc);
-                }
-
                 TempDataRequest(resp);
 
                 return Ok(resp);
             }
-            catch (Exception)
+            catch
             {
-                return Redirect("TagList");
+                return RedirectToAction("TagList");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetValueFromPlc(List<string> address)
+        {
+            if (address == null || !address.Any())
+                return BadRequest("No data received.");
+
+            try
+            {
+                List<vmPlc> list = await _interConfigurationService.GetListPlc();
+
+
+                foreach (var item in address)
+                {
+                    var resp = await _interConfigurationService.ReadPlcAsync(item);
+                    list.Where(x => x.Id == resp.Id).Select(x => x.Value = resp.Value);
+                }
+                
+
+                return Ok(list);
+            }
+            catch
+            {
+                return RedirectToAction("TagList");
             }
         }
 

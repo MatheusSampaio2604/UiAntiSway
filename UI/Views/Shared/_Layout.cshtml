@@ -74,11 +74,9 @@
 
 </head>
 <body>
-
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light  border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                @* <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index"><b><img id="logoNav" src="~/imgs/janus-logo-nav.png" /></b></a> *@
                 <a class="navbar-brand" asp-area="" asp-controller="Management" asp-action="Monitoring"><b><img id="logoNav" src="/imgs/janus-logo-nav-pb.png" /></b></a>
                 @*       @if (isAuthenticated)
                 { *@
@@ -142,26 +140,26 @@
             </div>
         </nav>
     </header>
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div class="d-flex justify-content-center">
-            <div class="alert alert-success text-center" role="alert">
-                @TempData["SuccessMessage"]
-            </div>
-        </div>
-        TempData["SuccessMessage"] = null;
-    }
-    @if (TempData["ErrorMessage"] != null)
-    {
-        <div class="d-flex justify-content-center">
-            <div class="alert alert-danger text-center" role="alert">
-                @TempData["ErrorMessage"]
-            </div>
-        </div>
-        TempData["ErrorMessage"] = null;
-    }
 
     <div class="container pb-5">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="d-flex justify-content-center">
+                <div class="alert alert-success text-center" role="alert">
+                    @TempData["SuccessMessage"]
+                </div>
+            </div>
+            TempData["SuccessMessage"] = null;
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="d-flex justify-content-center">
+                <div class="alert alert-danger text-center" role="alert">
+                    @TempData["ErrorMessage"]
+                </div>
+            </div>
+            TempData["ErrorMessage"] = null;
+        }
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
