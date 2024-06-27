@@ -13,6 +13,16 @@
         margin: 0;
     }
 
+    #plcTable_paginate {
+        display: flex;
+        justify-content: space-between
+    }
+
+    #plcTable_info {
+        display: flex;
+        justify-content: center
+    }
+
     .dataTables_wrapper .dataTables_length,
     .dataTables_wrapper .dataTables_filter {
         margin-bottom: 10px;
@@ -33,27 +43,34 @@
         color: #fff;
     }
 
+    .center-input {
+        text-align: center;
+    }
+
+        .center-input input {
+            margin: auto;
+            display: block;
+        }
 </style>
 
-<div class="container mt-5">
+<div class="container mt-5 mb-5">
     <div class="card">
         <div class="card-header text-center">
-            <h2>PLC Communication</h2>
+            <h2>Tag Communication</h2>
         </div>
         <div class="card-body">
             <div class="row mb-3">
 
                 <div class="col-md-6">
-                    <h2>Plc's</h2>
+                    <h2>Tag's</h2>
                 </div>
                 <div class="col-md-6 text-end">
-                    <button class="btn btn-outline-secondary add-button">Add tag</button>
-                    <a href="#" class=" spinner-border spinner-border-sm update-values" title="Update all tag values" role="button">
-                        <span class="visually-hidden">Loading...</span>
-                    </a>
-
-                    @* <button class="btn btn-warning update-values">Update</button> *@
-
+                    <button class="btn btn-outline-info add-button">
+                        <i class="fa fa-solid fa-plus"></i> Add new tag
+                    </button>
+                    <button class="btn btn-outline-warning get-updated-values">
+                        <i class="fa fa-refresh fa-spin"></i> Update all tag values
+                    </button>
                 </div>
             </div>
 
@@ -76,31 +93,31 @@
                             <tr>
                                 <td hidden>@plc.Id</td>
                                 <td hidden>@plc.AddressPlc</td>
-                                <td width="53%">@plc.Name</td>
-                                <td width="7%">@plc.Type</td>
-                                <td width="15%">
+                                <td width="48%">@plc.Name</td>
+                                <td width="7%" class="text-center">@plc.Type</td>
+                                <td width="15%" class="center-input">
                                     @{
                                         if (plc.Type == "bool")
                                         {
-                                            if (plc.Value.Equals("true"))
-                                            {
-                                                <input type="number" class="form-control edit-value" min="0" max="1" step="1" onkeydown="return false;" data-type="bool" value="1" />
-                                            }
-                                            else
-                                            {
-                                                <input type="number" class="form-control edit-value" min="0" max="1" step="1" onkeydown="return false;" data-type="bool" value="0" />
-                                            }
-                                        }
-                                        else if (plc.Type.Equals("int") || plc.Type.Equals("double"))
-                                        {
-                                            <input type="number" class="form-control edit-value" min="0" max="9999999" step="1" onkeydown="return true;" data-type="number" value="@plc.Value" />
-                                        }
+                                            int value = plc.Value.Equals("true") ? 1 : 0;
 
+                                            <input type="number" class="form-control edit-value" min="0" max="1" step="1" onkeydown="return false;" value="@value" />
+                                        }
+                                        else if (plc.Type.Equals("int"))
+                                        {
+                                            <input type="number" class="form-control edit-value" min="0" max="9999999" step="1" onkeydown="return true;" value="@plc.Value" />
+                                        }
+                                        else if (plc.Type.Equals("double"))
+                                        {
+                                            <input type="number" class="form-control edit-value" min="0" max="9999999" step="0.1" onkeydown="return true;" value="@plc.Value" />
+                                        }
                                     }
                                 </td>
-                                <td width="25%">
-                                    <button class="btn btn-warning set-value-button">Set value</button>
-                                    <button class="btn btn-secondary details-button">Edit plc</button>
+
+                                <td width="30%" class="text-center">
+                                    <button class="btn btn-warning set-value-button" title="send a new value to tag"><i class="fa fa-solid fa-wrench"></i> Set value</button>
+                                    <button class="btn btn-secondary details-button" title="edit tag in TagList"><i class="fa fa-solid fa-gear"></i> Edit tag</button>
+                                    <button class="btn btn-danger delete-button" style="height: 38px;" title="delete tag in TagList"><i class="fa fa-solid fa-trash"></i> </button>
                                 </td>
                             </tr>
                         }
@@ -110,8 +127,11 @@
             else
             {
                 <div class="row">
-                    <p>Not Found Tags</p>
-                    <button class="btn btn-primary add-button">Add tag</button>
+                    <p class="text-center">Not Found Tags</p>
+                    <div class="row col-md-3 mx-auto">
+                        <button class="btn btn-info add-button">Add tag</button>
+
+                    </div>
                 </div>
             }
 
@@ -139,14 +159,23 @@
     <script>
         $(document).ready(function () {
 
-            $('.update-values').on('click', function () {
+            var table = new DataTable('#plcTable', {
+                "language": {
+                    "url": "https://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/English.json",
+                    "lengthMenu": "Mostrar _MENU_ registros por página",
+                },
+                "order": [[0, 'desc']],
+                "fixedHeader": true,
+                "pageLength": 10,
+                "responsive": true
+            });
+
+            $('.get-updated-values').on('click', function () {
                 try {
                     var listAddress = [];
 
                     $('#plcTable tbody tr').each(function () {
-                        var id = $(this).find('td:first').text().trim();
                         var address = $(this).find('td:nth-child(2)').text().trim();
-
                         listAddress.push(address);
                     });
 
@@ -159,7 +188,7 @@
                             address: listAddress
                         },
                         success: function (response) {
-                            updateTableValues(data);
+                            updateTableValues(response);
                         },
                         error: function (xhr, status, error) {
 
@@ -174,30 +203,26 @@
             function updateTableValues(data) {
                 $('#plcTable tbody tr').each(function () {
                     var id = $(this).find('td:first').text().trim();
-                    var address = $(this).find('td:nth-child(2)').text().trim();
+                    var plc = data.find(x => x.id == id);
 
-                    var plc = data.find(x => x.Id == id && x.AddressPlc == address);
                     if (plc) {
-                        $(this).find('td:nth-child(5)').html(plc.Value);
+                        if (plc.type == 'bool') {
+                            $(this).find('.edit-value').val(plc.value == 'true' ? 1 : 0);
+                        } else if (plc.type == 'double') {
+                            $(this).find('.edit-value').val(parseFloat(plc.value));
+                        } else {
+                            $(this).find('.edit-value').val(parseInt(plc.value, 10));
+                        }
                     }
                 });
             }
 
-            var table = new DataTable('#plcTable', {
-                "language": {
-                    "url": "https://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/English.json",
-                    "lengthMenu": "Mostrar _MENU_ registros por página",
-                },
-                "order": [[0, 'desc']],
-                "fixedHeader": true,
-                "pageLength": 10,
-                "responsive": true
-            });
+
 
             $('.set-value-button').on('click', function () {
                 var row = $(this).closest('tr');
                 var id = row.find('td:eq(0)').text();
-                var type = row.find('td:eq(2)').text();
+                var type = row.find('td:eq(3)').text();
                 var value = row.find('.edit-value').val();
 
                 if (type === "bool") {
@@ -230,7 +255,7 @@
                 var id = row.find('td:eq(0)').text();
 
                 $.ajax({
-                    url: '@Url.Action("DetailTagInList")',
+                    url: '@Url.Action("EditTagInList")',
                     type: 'GET',
                     data: {
                         idTag: id
@@ -259,6 +284,26 @@
                         alert('Error');
                     }
                 });
+            });
+
+            $('.delete-button').on('click', function () {
+                var row = $(this).closest('tr');
+                var id = row.find('td:eq(0)').text();
+                if (confirm(`Are you sure you want to delete this tag? \nIt will not be possible to reverse`)) {
+                    $.ajax({
+                        url: '@Url.Action("DeleteTagInList")',
+                        type: 'POST',
+                        data: {
+                            id: id
+                        },
+                        success: function (response) {
+                            window.location.href = '@Url.Action("TagList", "Management")';
+                        },
+                        error: function (xhr, status, error) {
+                            window.location.href = '@Url.Action("TagList", "Management")';
+                        }
+                    });
+                }
             });
         });
     </script>

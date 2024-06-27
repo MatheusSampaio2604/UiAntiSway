@@ -32,14 +32,28 @@
     }
 </style>
 
-<div class="container mt-5 ">
+<div class="container mt-3 ">
     <div class="card d-flex">
         <div class="card-header text-center">
-            <h1>PLC SETTING</h1>
+            <h1>TAG SETTING</h1>
         </div>
         <div class="card-body">
             <form asp-action="PlcSettings" method="post">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="row">
+
+                    <div class="col-md-6 mx-auto">
+                        <div class="form-group">
+                            <label asp-for="Driver" class="control-label"></label>
+                            <select asp-for="Driver" class="form-select bg-light text-dark" id="Brand"
+                                    asp-items="@(ViewBag.Driver as SelectList)"
+                                    aria-describedby="ListCpuType">
+                                <option selected disabled value="">Select one</option>
+                            </select>
+                            <span asp-validation-for="Driver" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
@@ -74,7 +88,9 @@
 
                 <div class="row text-center mt-3">
                     <div class="col-md-6">
-                        <input type="submit" value="Save" class="btn button btn-success" />
+                        <button type="submit" class="btn button btn-outline-success">
+                            <i class="fa fa-solid fa-download"></i> Save
+                        </button>
                     </div>
                     <div class="col-md-6">
                         <input id="testConn" type="button" value="Test Connection" class="btn button btn-outline-secondary custom-btn" />

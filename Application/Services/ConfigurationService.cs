@@ -71,15 +71,22 @@ namespace Application.Services
             return item.FirstOrDefault(x => x.Id == idTag);
         }
 
-        public async Task<bool> AddTagInList(vmPlc plc)
+        public async Task<bool> AddTagInList(List<vmPlc> plc)
         {
-            var item = await _GeneralApi.PostAsync<vmPlc, bool>($"{routeMgmt}/v1/Plc/AddTagInList", plc);
+            var item = await _GeneralApi.PostAsync<List<vmPlc>, bool>($"{routeMgmt}/v1/Plc/AddTagInList", plc);
             return item;
         }
 
         public async Task<bool> UpdateTagInList(vmPlc plc)
         {
             var item = await _GeneralApi.PostAsync<vmPlc, bool>($"{routeMgmt}/v1/Plc/UpdateTagInList", plc);
+
+            return item;
+        }
+
+        public async Task<bool> DeleteTagInList(int id)
+        {
+            var item = await _GeneralApi.DeleteAsync<int, bool>($"{routeMgmt}/v1/Plc/{id}/DeleteTagInList");
 
             return item;
         }

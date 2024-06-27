@@ -93,11 +93,22 @@ namespace Infra.RequestApi
             }
         }
 
-        public async Task DeleteAsync(string url)
+        public async Task<TResponse?> DeleteAsync<TRequest, TResponse>(string url)
         {
             HttpResponseMessage response = await _httpClient.DeleteAsync(url);
 
-            if (!response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
+            {
+                string responseData = await response.Content.ReadAsStringAsync();
+                if (typeof(TResponse) == typeof(string))
+                    return (TResponse)(object)responseData;
+
+                if (typeof(TResponse) == typeof(bool))
+                    return (TResponse)(object)Convert.ToBoolean(responseData);
+
+                return JsonConvert.DeserializeObject<TResponse>(responseData);
+            }
+            else
             {
                 throw new HttpRequestException($"Failed to DELETE data from {url}. Status code: {response.StatusCode}");
             }

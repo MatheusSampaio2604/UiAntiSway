@@ -25,5 +25,9 @@ namespace Application.ViewModels
         [DisplayName("Slot number")]
         [Required(ErrorMessage = "Required!")]
         public required short Slot { get; set; }
+
+        [DisplayName("Driver")]
+        [Required(ErrorMessage = "Required!")]
+        public required string Driver { get; set; }
     }
 }

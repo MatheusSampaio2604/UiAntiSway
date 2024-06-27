@@ -26,13 +26,13 @@
                     <select asp-for="Type" class="form-select bg-light text-dark" id="Type"
                             asp-items="@(ViewBag.ListTypeTag as SelectList)"
                             aria-describedby="ListTypeTag">
-                        <option selected disabled value="" required>Select one</option>
+                        <option selected disabled value="">Select one</option>
                     </select>
                     <span asp-validation-for="Type" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <label asp-for="Value" class="control-label"></label>
-                    <input asp-for="Value" class="form-control" required />
+                    <input asp-for="Value" type="number" class="form-control Value" required />
                     <span asp-validation-for="Value" class="text-danger"></span>
                 </div>
                 <div class="form-group text-center mt-3">
@@ -42,3 +42,50 @@
         </div>
     </div>
 </div>
+
+<script>
+    $(document).ready(function () {
+        let originalType = $('#Type').val();
+
+        let $valueInput = $('.Value');
+
+        $('#Type').off('change').on('change', function () {
+            var newType = $(this).val();
+
+            if (newType !== originalType) {
+                $valueInput.removeAttr('min max step onkeydown value');
+
+                $valueInput.val('');
+
+                if (newType == 'int') {
+                    $valueInput.attr({
+                        'type': 'number',
+                        'min': '0',
+                        'max': '999999',
+                        'step': '1',
+                        'onkeydown': 'return true;'
+                    });
+                    $valueInput.val('0');
+                } else if (newType == 'double') {
+                    $valueInput.attr({
+                        'type': 'number',
+                        'min': '0',
+                        'step': '0.1',
+                        'onkeydown': 'return true;'
+                    });
+                    $valueInput.val('0.1');
+                } else if (newType == 'bool') {
+                    $valueInput.attr({
+                        'type': 'number',
+                        'min': '0',
+                        'max': '1',
+                        'step': '1',
+                        'onkeydown': 'return false;'
+                    });
+                    $valueInput.val('1');
+                }
+            }
+        });
+    });
+
+</script>

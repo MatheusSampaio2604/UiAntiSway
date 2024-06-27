@@ -2,6 +2,7 @@
 using Application.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Xml.Linq;
 using UI.Models.ActionsFilter;
 
 namespace UI.Controllers
@@ -29,7 +30,8 @@ namespace UI.Controllers
         {
             try
             {
-                bool plcConnection = await _interConfigurationService.TestConnectionPlc();
+                bool plcConnection = false;
+                plcConnection = await _interConfigurationService.TestConnectionPlc();
                 return plcConnection ? Ok(plcConnection) : BadRequest(plcConnection);
             }
             catch (Exception e)
@@ -60,14 +62,23 @@ namespace UI.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddTagInList(vmPlc plc)
+        public async Task<IActionResult> AddTagInList(vmPlc plc)
         {
-            if (!ModelState.IsValid)
-                return View(plc);
-
             try
             {
-                var item = _interConfigurationService.AddTagInList(plc);
+                List<vmPlc> listPlc = [];
+                
+                if(plc.Type == "bool")
+                    plc.Value = plc.Value == "1" ? "true" : "false";
+                listPlc.Add(plc);
+
+                await _interConfigurationService.AddTagInList(listPlc);
+
+                List<vmApiRequestWritePlc> vmApiRequest = [new vmApiRequestWritePlc { AddressPlc = plc.AddressPlc, Type = plc.Type, Value = plc.Value }];
+                var resp = await _interConfigurationService.WritePlcAsync(vmApiRequest);
+
+                TempDataRequest(resp);
+
                 return Redirect("TagList");
             }
             catch
@@ -83,12 +94,12 @@ namespace UI.Controllers
         /// <param name="idTag"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> DetailTagInList(int idTag)
+        public async Task<IActionResult> EditTagInList(int idTag)
         {
             ViewBag.ListTypeTag = new SelectList(new List<string> { "bool", "int", "double", });
 
             vmPlc? item = await _interConfigurationService.DetailTagInList(idTag);
-            return PartialView("_DetailTagInListPartial", item);
+            return PartialView("_EditTagInListPartial", item);
         }
 
         /// <summary>
@@ -102,12 +113,32 @@ namespace UI.Controllers
             try
             {
                 bool item = await _interConfigurationService.UpdateTagInList(plc);
-                TempDataRequest(item);
+
+                List<vmApiRequestWritePlc> vmApiRequest = [new vmApiRequestWritePlc { AddressPlc = plc.AddressPlc, Type = plc.Type, Value = plc.Value }];
+                var resp = await _interConfigurationService.WritePlcAsync(vmApiRequest);
+
+                TempDataRequest(resp);
                 return Redirect("TagList");
             }
             catch
             {
                 return View(plc);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteTagInList(int id)
+        {
+            try
+            {
+                bool item = await _interConfigurationService.DeleteTagInList(id);
+
+                TempDataRequest(item);
+                return item ? Ok(item) : BadRequest(item);
+            }
+            catch
+            {
+                return Redirect("TagList");
             }
         }
 
@@ -174,6 +205,7 @@ namespace UI.Controllers
         [HttpGet]
         public async Task<IActionResult> PlcSettings()
         {
+            ViewBag.Driver = new SelectList(new List<string> { "SIEMENS", "ROCKWELL" });
             ViewBag.ListCpuType = new SelectList(new List<string>
             {
                 "S7200", "Logo0BA8", "S7200Smart",
@@ -199,11 +231,14 @@ namespace UI.Controllers
 
                 TempDataRequest(plcSetting);
 
-                return RedirectToAction("PlcSettings", "Management");
+                if (plcSetting)
+                    return Redirect("PlcSettings");
+                else
+                    return BadRequest(plcSetting);
             }
-            catch (Exception e)
+            catch
             {
-                return BadRequest("Not executed by any error...");
+                return BadRequest(false);
             }
         }
 
@@ -235,18 +270,27 @@ namespace UI.Controllers
                         Type = item.Type,
                         Value = item.Value,
                     });
-
-                    plcData.Value = item.Value;
-                    await _interConfigurationService.UpdateTagInList(plcData);
+                    //plcData.Value = item.Value;
+                    //await _interConfigurationService.UpdateTagInList(plcData);
                 }
                 var resp = await _interConfigurationService.WritePlcAsync(vmApiRequest);
+
+                if (resp)
+                {
+                    foreach (var item in vmWrite)
+                    {
+                        var plcData = await _interConfigurationService.DetailTagInList(item.Id);
+                        plcData.Value = item.Value;
+                        await _interConfigurationService.UpdateTagInList(plcData);
+                    }
+                }
                 TempDataRequest(resp);
 
                 return Ok(resp);
             }
             catch
             {
-                return RedirectToAction("TagList");
+                return Ok(false);
             }
         }
 
@@ -263,10 +307,16 @@ namespace UI.Controllers
 
                 foreach (var item in address)
                 {
-                    var resp = await _interConfigurationService.ReadPlcAsync(item);
-                    list.Where(x => x.Id == resp.Id).Select(x => x.Value = resp.Value);
+                    vmWritePlc resp = await _interConfigurationService.ReadPlcAsync(item);
+
+                    vmPlc? plcToUpdate = list.FirstOrDefault(x => x.Id == resp.Id);
+
+                    if (plcToUpdate != null)
+                    {
+                        plcToUpdate.Value = resp.Value;
+                        await _interConfigurationService.UpdateTagInList(plcToUpdate);
+                    }
                 }
-                
 
                 return Ok(list);
             }

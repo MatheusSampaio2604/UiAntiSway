@@ -17,7 +17,9 @@ namespace Application.Services.Interface
         Task<List<vmPlc>> GetListPlc();
         Task<vmPlc> DetailTagInList(int idTag);
         Task<bool> UpdateTagInList(vmPlc plc);
-        Task<bool> AddTagInList(vmPlc plc);
+        Task<bool> DeleteTagInList(int id);
+
+        Task<bool> AddTagInList(List<vmPlc> plc);
 
         Task<vmPlcSettings> GetSettingsPlc();
         Task<bool> UpdateSettingsPlc(vmPlcSettings settings);

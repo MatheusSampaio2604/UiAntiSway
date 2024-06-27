@@ -41,29 +41,36 @@
     </div>
     <div class="col-md-4 mx-auto my-auto">
         <div class="row text-center">
-            <h3>Deviation</h3>
+            <h3>Delta</h3>
         </div>
         <form method="post">
             <div class="row text-center">
                 <div class="col-md-6 ">
                     <div class="form-group">
-                        <label asp-for="X" class="control-label">Width</label>
+                        <img class=" img" height="35px" src="~/imgs/deltax.png" title="X"/>
                         <input asp-for="X" type="text" class="form-control" />
                         <span asp-validation-for="X" class="text-danger"></span>
                     </div>
                 </div>
                 <div class="col-md-6 ">
                     <div class="form-group">
-                        <label asp-for="Y" class="control-label">Height</label>
+                        <img class=" img" height="35px" src="~/imgs/deltay.png" title="Y" />
                         <input asp-for="Y" type="text" class="form-control" />
                         <span asp-validation-for="Y" class="text-danger"></span>
                     </div>
                 </div>
             </div>
             <div class="row text-center">
-                <div class="col-md-6 mt-4 mx-auto">
+                <div class="col-md-6 mt-4">
                     <div class="form-group">
-                        <label asp-for="Z" class="control-label">Depth</label>
+                        <label asp-for="Z" class="control-label">DELTA 1</label>
+                        <input asp-for="Z" type="text" class="form-control" />
+                        <span asp-validation-for="Z" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6 mt-4">
+                    <div class="form-group">
+                        <label asp-for="Z" class="control-label">DELTA 2</label>
                         <input asp-for="Z" type="text" class="form-control" />
                         <span asp-validation-for="Z" class="text-danger"></span>
                     </div>
