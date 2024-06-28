@@ -271,6 +271,7 @@
                 });
             });
 
+            //Add Tag in List
             $('.add-button').on('click', function () {
                 $.ajax({
                     url: '@Url.Action("AddTagInList")',
@@ -286,13 +287,14 @@
                 });
             });
 
+            //Delete Tag in List
             $('.delete-button').on('click', function () {
                 var row = $(this).closest('tr');
                 var id = row.find('td:eq(0)').text();
                 if (confirm(`Are you sure you want to delete this tag? \nIt will not be possible to reverse`)) {
                     $.ajax({
                         url: '@Url.Action("DeleteTagInList")',
-                        type: 'POST',
+                        type: 'Delete',
                         data: {
                             id: id
                         },

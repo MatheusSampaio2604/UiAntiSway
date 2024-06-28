@@ -6,6 +6,8 @@ using UI.Models.ActionsFilter;
 
 namespace UI.Controllers
 {
+
+    [AllowAnonymous]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -22,13 +24,11 @@ namespace UI.Controllers
             return View();
         }
 
-        [AllowAnonymous]
         public IActionResult Privacy()
         {
             return View();
         }
 
-        [AllowAnonymous]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

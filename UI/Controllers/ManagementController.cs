@@ -1,13 +1,14 @@
 ﻿using Application.Services.Interface;
 using Application.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Xml.Linq;
-using UI.Models.ActionsFilter;
+using Microsoft.CodeAnalysis;
 
 namespace UI.Controllers
 {
     //[AuthorizeToken]
+    [AllowAnonymous]
     public class ManagementController : Controller
     {
         private readonly InterCalibrationService _interCalibrationService;
@@ -34,10 +35,7 @@ namespace UI.Controllers
                 plcConnection = await _interConfigurationService.TestConnectionPlc();
                 return plcConnection ? Ok(plcConnection) : BadRequest(plcConnection);
             }
-            catch (Exception e)
-            {
-                return BadRequest(e.Message);
-            }
+            catch (Exception e) { return BadRequest(e.Message); }
         }
 
         /// <summary>
@@ -67,8 +65,8 @@ namespace UI.Controllers
             try
             {
                 List<vmPlc> listPlc = [];
-                
-                if(plc.Type == "bool")
+
+                if (plc.Type == "bool")
                     plc.Value = plc.Value == "1" ? "true" : "false";
                 listPlc.Add(plc);
 
@@ -81,10 +79,7 @@ namespace UI.Controllers
 
                 return Redirect("TagList");
             }
-            catch
-            {
-                return Redirect("TagList");
-            }
+            catch { return Redirect("TagList"); }
         }
 
 
@@ -120,13 +115,10 @@ namespace UI.Controllers
                 TempDataRequest(resp);
                 return Redirect("TagList");
             }
-            catch
-            {
-                return View(plc);
-            }
+            catch { return View(plc); }
         }
 
-        [HttpPost]
+        [HttpDelete]
         public async Task<IActionResult> DeleteTagInList(int id)
         {
             try
@@ -136,10 +128,7 @@ namespace UI.Controllers
                 TempDataRequest(item);
                 return item ? Ok(item) : BadRequest(item);
             }
-            catch
-            {
-                return Redirect("TagList");
-            }
+            catch { return Redirect("TagList"); }
         }
 
         /// <summary>
@@ -168,10 +157,7 @@ namespace UI.Controllers
                 await _interCalibrationService.SetCalibrationCameraAsync(calibrationCamera);
                 return RedirectToAction("", "");
             }
-            catch
-            {
-                return View(calibrationCamera);
-            }
+            catch { return View(calibrationCamera); }
         }
 
         /// <summary>
@@ -228,18 +214,11 @@ namespace UI.Controllers
             try
             {
                 bool plcSetting = await _interConfigurationService.UpdateSettingsPlc(plcSettings);
-
                 TempDataRequest(plcSetting);
 
-                if (plcSetting)
-                    return Redirect("PlcSettings");
-                else
-                    return BadRequest(plcSetting);
+                return plcSetting ? Redirect("PlcSettings") : BadRequest(plcSetting);
             }
-            catch
-            {
-                return BadRequest(false);
-            }
+            catch { return BadRequest(false); }
         }
 
         private void TempDataRequest(bool resp)
@@ -255,26 +234,20 @@ namespace UI.Controllers
         {
             if (vmWrite == null || !vmWrite.Any())
                 return BadRequest("No data received.");
-
             try
             {
                 List<vmApiRequestWritePlc> vmApiRequest = [];
-
                 foreach (var item in vmWrite)
                 {
                     var plcData = await _interConfigurationService.DetailTagInList(item.Id);
-
                     vmApiRequest.Add(new vmApiRequestWritePlc
                     {
                         AddressPlc = plcData.AddressPlc,
                         Type = item.Type,
                         Value = item.Value,
                     });
-                    //plcData.Value = item.Value;
-                    //await _interConfigurationService.UpdateTagInList(plcData);
                 }
                 var resp = await _interConfigurationService.WritePlcAsync(vmApiRequest);
-
                 if (resp)
                 {
                     foreach (var item in vmWrite)
@@ -286,45 +259,33 @@ namespace UI.Controllers
                 }
                 TempDataRequest(resp);
 
-                return Ok(resp);
+                return resp ? Ok(resp) : BadRequest(resp);
             }
-            catch
-            {
-                return Ok(false);
-            }
+            catch { return BadRequest(false); }
         }
 
         [HttpPost]
         public async Task<IActionResult> GetValueFromPlc(List<string> address)
         {
-            if (address == null || !address.Any())
+            if (address.Count == 0)
                 return BadRequest("No data received.");
-
             try
             {
                 List<vmPlc> list = await _interConfigurationService.GetListPlc();
-
-
                 foreach (var item in address)
                 {
                     vmWritePlc resp = await _interConfigurationService.ReadPlcAsync(item);
-
                     vmPlc? plcToUpdate = list.FirstOrDefault(x => x.Id == resp.Id);
 
-                    if (plcToUpdate != null)
+                    if (plcToUpdate is not null)
                     {
                         plcToUpdate.Value = resp.Value;
                         await _interConfigurationService.UpdateTagInList(plcToUpdate);
                     }
                 }
-
                 return Ok(list);
             }
-            catch
-            {
-                return RedirectToAction("TagList");
-            }
+            catch { return RedirectToAction("TagList"); }
         }
-
     }
 }
