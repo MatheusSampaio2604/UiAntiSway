@@ -15,9 +15,9 @@ namespace Application.Services
             _GeneralApi = generalApi;
         }
 
-        public async Task<vmWritePlc> ReadPlcAsync(string address)
+        public async Task<string> ReadPlcAsync(string address)
         {
-            var dados = await _GeneralApi.GetAsync<vmWritePlc>($"{routeMgmt}/v1/Plc/getValueFromPlc/{address}");
+            var dados = await _GeneralApi.GetAsync<string>($"{routeMgmt}/v1/Plc/getValueFromPlc/{address}");
 
             return dados;
         }

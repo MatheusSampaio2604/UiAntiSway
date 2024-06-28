@@ -55,7 +55,7 @@ namespace UI
 
             builder.Services.AddScoped<InterLoginService, LoginService>();
             builder.Services.AddScoped<InterRegisterService, RegisterService>();
-            builder.Services.AddScoped<InterCalibrationService, CalibrationService>();
+            builder.Services.AddScoped<InterCameraService, CameraService>();
             builder.Services.AddScoped<InterConfigurationService, ConfigurationService>();
 
             builder.Services.AddCors(options =>

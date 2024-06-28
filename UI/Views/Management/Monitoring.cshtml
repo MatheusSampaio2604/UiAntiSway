@@ -8,7 +8,7 @@
 }
 <style>
     .camera-container {
-        height: 600px;
+        height: 500px;
         border: 1px solid #ccc;
         background-color: #eee;
         display: flex;
@@ -19,18 +19,31 @@
     }
 
     .camera {
-        width: 80%;
-        height: 80%;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         background-color: #aaa;
         border-radius: 5px;
     }
+
+        .camera img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
 </style>
 
 <div class="row">
     <div class="col-md-8">
         <div class="col-md-10">
             <div class="camera-container d-flex justify-content-center align-items-center">
-                <div class="camera"></div>
+                <div class="camera">
+                    @* <video id="cameraFeed" src="" alt="Camera Feed" class="img-fluid"> *@
+                </div>
             </div>
             <div class="card" style="background-color: #bdbcbc; margin-right:20px;">
                 <div class="text-center">
@@ -46,35 +59,54 @@
         <div class="row text-center">
             <div class="col-md-6 ">
                 <div class="form-group">
-                    <img class=" img" height="35px" src="~/imgs/deltax.png" title="X"/>
-                    <input asp-for="X" class="form-control" readonly />
-                    <span asp-validation-for="X" class="text-danger"></span>
+                    <img class=" img" height="35px" src="~/imgs/deltax.png" title="X" />
+                    <input asp-for="DeltaX" type="number" class="form-control" id="DeltaX" readonly />
+                    <span asp-validation-for="DeltaX" class="text-danger"></span>
                 </div>
             </div>
             <div class="col-md-6 ">
                 <div class="form-group">
-                    <img class="img" height="35px" src="~/imgs/deltay.png" title="Y"/>
-                    <input asp-for="Y" class="form-control" readonly />
-                    <span asp-validation-for="Y" class="text-danger"></span>
+                    <img class="img" height="35px" src="~/imgs/deltay.png" title="Y" />
+                    <input asp-for="DeltaY" type="number" class="form-control" id="DeltaY" readonly />
+                    <span asp-validation-for="DeltaY" class="text-danger"></span>
                 </div>
             </div>
         </div>
-
         <div class="row text-center">
             <div class="col-md-6 mt-4">
                 <div class="form-group">
-                    <label asp-for="Z" class="control-label">other</label>
-                    <input asp-for="Z" class="form-control" readonly />
-                    <span asp-validation-for="Z" class="text-danger"></span>
+                    <label asp-for="DeltaZ" class="control-label">other</label>
+                    <input asp-for="DeltaZ" type="number" class="form-control" id="DeltaZ" readonly />
+                    <span asp-validation-for="DeltaZ" class="text-danger"></span>
                 </div>
             </div>
             <div class="col-md-6 mt-4">
                 <div class="form-group">
-                    <label asp-for="Z" class="control-label">other</label>
-                    <input asp-for="Z" class="form-control" readonly />
-                    <span asp-validation-for="Z" class="text-danger"></span>
+                    <label asp-for="DeltaZZ" class="control-label">other</label>
+                    <input asp-for="DeltaZZ" type="number" class="form-control" id="DeltaZZ" readonly />
+                    <span asp-validation-for="DeltaZZ" class="text-danger"></span>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+
+        async function fetchCameraValues() {
+            try {
+                const response = await fetch('@Url.Action("VideoCamera")');
+                const data = await response.json();
+
+                document.getElementById('cameraFeed').src = data.cameraFeedUrl;
+
+            } catch (error) {
+                console.error('Error fetching Camera values: \n' + error);
+            }
+        }
+
+        fetchCameraValues();
+    });
+
+</script> 

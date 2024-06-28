@@ -4,7 +4,7 @@ namespace Application.Services.Interface
 {
     public interface InterConfigurationService
     {
-        Task<vmWritePlc> ReadPlcAsync(string address);
+        Task<string> ReadPlcAsync(string address);
         Task<bool> WritePlcAsync(List<vmApiRequestWritePlc> plcData);
         Task<List<vmPlc>> GetListPlc();
         Task<vmPlc> DetailTagInList(int idTag);

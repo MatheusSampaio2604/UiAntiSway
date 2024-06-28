@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis;
+using System.Reflection;
 
 namespace UI.Controllers
 {
@@ -11,12 +12,12 @@ namespace UI.Controllers
     [AllowAnonymous]
     public class ManagementController : Controller
     {
-        private readonly InterCalibrationService _interCalibrationService;
+        private readonly InterCameraService _interCalibrationService;
         private readonly InterConfigurationService _interConfigurationService;
 
         public List<vmPlc> vmPlcs = [];
 
-        public ManagementController(InterCalibrationService interCalibrationService, InterConfigurationService interConfigurationService)
+        public ManagementController(InterCameraService interCalibrationService, InterConfigurationService interConfigurationService)
         {
             _interCalibrationService = interCalibrationService;
             _interConfigurationService = interConfigurationService;
@@ -33,13 +34,13 @@ namespace UI.Controllers
             {
                 bool plcConnection = false;
                 plcConnection = await _interConfigurationService.TestConnectionPlc();
-                return plcConnection ? Ok(plcConnection) : BadRequest(plcConnection);
+                return Ok(plcConnection);
             }
             catch (Exception e) { return BadRequest(e.Message); }
         }
 
         /// <summary>
-        /// 
+        /// Load a list for all tags saved
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -51,7 +52,10 @@ namespace UI.Controllers
             return View(listPlc);
         }
 
-
+        /// <summary>
+        /// open one view for add new tag in list
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public IActionResult AddTagInList()
         {
@@ -59,6 +63,11 @@ namespace UI.Controllers
             return PartialView("_AddTagInListPartial");
         }
 
+        /// <summary>
+        /// Add a new tag in list
+        /// </summary>
+        /// <param name="plc"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> AddTagInList(vmPlc plc)
         {
@@ -70,10 +79,7 @@ namespace UI.Controllers
                     plc.Value = plc.Value == "1" ? "true" : "false";
                 listPlc.Add(plc);
 
-                await _interConfigurationService.AddTagInList(listPlc);
-
-                List<vmApiRequestWritePlc> vmApiRequest = [new vmApiRequestWritePlc { AddressPlc = plc.AddressPlc, Type = plc.Type, Value = plc.Value }];
-                var resp = await _interConfigurationService.WritePlcAsync(vmApiRequest);
+                bool resp = await _interConfigurationService.AddTagInList(listPlc);
 
                 TempDataRequest(resp);
 
@@ -84,7 +90,7 @@ namespace UI.Controllers
 
 
         /// <summary>
-        /// 
+        /// open a view for edit an existing tag
         /// </summary>
         /// <param name="idTag"></param>
         /// <returns></returns>
@@ -94,11 +100,15 @@ namespace UI.Controllers
             ViewBag.ListTypeTag = new SelectList(new List<string> { "bool", "int", "double", });
 
             vmPlc? item = await _interConfigurationService.DetailTagInList(idTag);
+
+            if (item.Type == "bool")
+                item.Value = item.Value.Equals("true") ? "1" : "0";
+
             return PartialView("_EditTagInListPartial", item);
         }
 
         /// <summary>
-        /// 
+        /// edit an existing tag in the list
         /// </summary>
         /// <param name="plc"></param>
         /// <returns></returns>
@@ -109,15 +119,17 @@ namespace UI.Controllers
             {
                 bool item = await _interConfigurationService.UpdateTagInList(plc);
 
-                List<vmApiRequestWritePlc> vmApiRequest = [new vmApiRequestWritePlc { AddressPlc = plc.AddressPlc, Type = plc.Type, Value = plc.Value }];
-                var resp = await _interConfigurationService.WritePlcAsync(vmApiRequest);
-
-                TempDataRequest(resp);
+                TempDataRequest(item);
                 return Redirect("TagList");
             }
-            catch { return View(plc); }
+            catch { return BadRequest(plc); }
         }
 
+        /// <summary>
+        /// delete an existing tag in the list
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete]
         public async Task<IActionResult> DeleteTagInList(int id)
         {
@@ -137,10 +149,15 @@ namespace UI.Controllers
         /// <returns></returns>
         [HttpGet]
         //[AuthorizeRoles("Admin")]
-        public IActionResult Calibration()
+        public async Task<IActionResult> Calibration()
         {
-            //var data = await _interCalibrationService.GetCalibrationCameraAsync();
-            return View();
+
+            try
+            {
+                var data = await _interCalibrationService.GetCalibrationCameraAsync();
+                return View(data);
+            }
+            catch { return View(new vmCalibrationCamera()); }
         }
 
         /// <summary>
@@ -148,16 +165,32 @@ namespace UI.Controllers
         /// </summary>
         /// <param name="calibrationCamera"></param>
         /// <returns></returns>
-        [HttpPost]
+        [HttpGet]
         //[AuthorizeRoles("Admin")]
-        public async Task<IActionResult> Calibration(vmCalibrationCamera calibrationCamera)
+        public async Task<IActionResult> ExecuteCalibration()
         {
             try
             {
-                await _interCalibrationService.SetCalibrationCameraAsync(calibrationCamera);
+                await _interCalibrationService.ExecuteCalibration();
                 return RedirectToAction("", "");
             }
-            catch { return View(calibrationCamera); }
+            catch { return RedirectToAction("", ""); }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        //[AuthorizeRoles("User", "Admin")]
+        [HttpGet]
+        public async Task<IActionResult> GetCalibrationCamera()
+        {
+            try
+            {
+                var data = await _interCalibrationService.GetCalibrationCameraAsync();
+                return Ok(data);
+            }
+            catch { return BadRequest(""); }
         }
 
         /// <summary>
@@ -165,27 +198,27 @@ namespace UI.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        public async Task<IActionResult> VideoCamera()
+        {
+            //var data = await _interCalibrationService.GetVideoCameraAsync();
+            return Ok();
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
         //[AuthorizeRoles("User", "Admin")]
-        public async Task<vmCalibrationCamera> GetCalibrationCamera()
+        public async Task<IActionResult> Monitoring()
         {
             var data = await _interCalibrationService.GetCalibrationCameraAsync();
-            return data;
+            return View(data);
         }
 
         /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        //[AuthorizeRoles("User", "Admin")]
-        public IActionResult Monitoring()
-        {
-            //var data = await _interCalibrationService.GetCalibrationCameraAsync();
-            return View();
-        }
-
-        /// <summary>
-        /// 
+        /// Open a view for Plc Settings
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -204,7 +237,7 @@ namespace UI.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Set a new configuration for Plc
         /// </summary>
         /// <param name="plcSettings"></param>
         /// <returns></returns>
@@ -221,6 +254,10 @@ namespace UI.Controllers
             catch { return BadRequest(false); }
         }
 
+        /// <summary>
+        /// Set a new alert message for all requisition's
+        /// </summary>
+        /// <param name="resp"></param>
         private void TempDataRequest(bool resp)
         {
             if (resp)
@@ -229,6 +266,11 @@ namespace UI.Controllers
                 TempData["ErrorMessage"] = "Error, not saved!";
         }
 
+        /// <summary>
+        /// Send a new value to tag
+        /// </summary>
+        /// <param name="vmWrite"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> SetValueToPlc(List<vmWritePlc> vmWrite)
         {
@@ -264,6 +306,11 @@ namespace UI.Controllers
             catch { return BadRequest(false); }
         }
 
+        /// <summary>
+        /// get a last value from tag
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> GetValueFromPlc(List<string> address)
         {
@@ -274,12 +321,18 @@ namespace UI.Controllers
                 List<vmPlc> list = await _interConfigurationService.GetListPlc();
                 foreach (var item in address)
                 {
-                    vmWritePlc resp = await _interConfigurationService.ReadPlcAsync(item);
-                    vmPlc? plcToUpdate = list.FirstOrDefault(x => x.Id == resp.Id);
+                    string resp = await _interConfigurationService.ReadPlcAsync(item);
+                    resp = String.IsNullOrEmpty(resp) ? "0" : resp;
+
+                    vmPlc? plcToUpdate = list.FirstOrDefault(x => x.AddressPlc == item);
 
                     if (plcToUpdate is not null)
                     {
-                        plcToUpdate.Value = resp.Value;
+                        if (plcToUpdate.Type == "bool")
+                            plcToUpdate.Value = resp == "1" ? "true" : "false";
+                        else
+                            plcToUpdate.Value = resp;
+
                         await _interConfigurationService.UpdateTagInList(plcToUpdate);
                     }
                 }

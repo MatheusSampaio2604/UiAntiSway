@@ -1,14 +1,17 @@
 ﻿@model Application.ViewModels.vmPlc
 
+@{
+
+}
+
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-12">
             <form asp-action="UpdateTagInList" method="post">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="form-group" hidden>
-                    <label asp-for="Id" class="control-label"></label>
-                    <input asp-for="Id" class="form-control" readonly />
-                    <span asp-validation-for="Id" class="text-danger"></span>
+                    <input asp-for="Id" class="form-control" hidden/>
+                    <input asp-for="Value" type="number" id="Value" class="form-control" hidden />
                 </div>
                 <div class="form-group">
                     <label asp-for="Name" class="control-label"></label>
@@ -28,11 +31,6 @@
                         <option selected disabled value="">Select one</option>
                     </select>
                     <span asp-validation-for="Type" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="Value" class="control-label"></label>
-                    <input asp-for="Value" type="number" id="Value" class="form-control" required />
-                    <span asp-validation-for="Value" class="text-danger"></span>
                 </div>
                 <div class="form-group text-center mt-3">
                     <input type="submit" value="Save" class="btn btn-outline-success" />

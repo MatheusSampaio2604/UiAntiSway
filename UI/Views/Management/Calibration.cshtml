@@ -47,39 +47,39 @@
             <div class="row text-center">
                 <div class="col-md-6 ">
                     <div class="form-group">
-                        <img class=" img" height="35px" src="~/imgs/deltax.png" title="X"/>
-                        <input asp-for="X" type="text" class="form-control" />
-                        <span asp-validation-for="X" class="text-danger"></span>
+                        <img class="img" height="35px" src="~/imgs/deltax.png" title="X" />
+                        <input asp-for="DeltaX" type="number" class="form-control" />
+                        <span asp-validation-for="DeltaX" class="text-danger"></span>
                     </div>
                 </div>
                 <div class="col-md-6 ">
                     <div class="form-group">
                         <img class=" img" height="35px" src="~/imgs/deltay.png" title="Y" />
-                        <input asp-for="Y" type="text" class="form-control" />
-                        <span asp-validation-for="Y" class="text-danger"></span>
+                        <input asp-for="DeltaY" type="number" class="form-control" />
+                        <span asp-validation-for="DeltaY" class="text-danger"></span>
                     </div>
                 </div>
             </div>
             <div class="row text-center">
                 <div class="col-md-6 mt-4">
                     <div class="form-group">
-                        <label asp-for="Z" class="control-label">DELTA 1</label>
-                        <input asp-for="Z" type="text" class="form-control" />
-                        <span asp-validation-for="Z" class="text-danger"></span>
+                        <label asp-for="DeltaZ" class="control-label">DELTA 1</label>
+                        <input asp-for="DeltaZ" type="number" class="form-control" />
+                        <span asp-validation-for="DeltaZ" class="text-danger"></span>
                     </div>
                 </div>
                 <div class="col-md-6 mt-4">
                     <div class="form-group">
-                        <label asp-for="Z" class="control-label">DELTA 2</label>
-                        <input asp-for="Z" type="text" class="form-control" />
-                        <span asp-validation-for="Z" class="text-danger"></span>
+                        <label asp-for="DeltaZZ" class="control-label">DELTA 2</label>
+                        <input asp-for="DeltaZZ" type="number" class="form-control" />
+                        <span asp-validation-for="DeltaZZ" class="text-danger"></span>
                     </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-12 mt-3 text-center">
                     <div class="form-group">
-                        <input type="submit" class="btn btn-info btn-lg" value="Save" />
+                        <input type="submit" class="btn btn-info btn-lg" value="Calibrar" />
                     </div>
                 </div>
             </div>

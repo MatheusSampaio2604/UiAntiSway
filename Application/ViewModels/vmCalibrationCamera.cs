@@ -2,8 +2,9 @@
 {
     public class vmCalibrationCamera
     {
-        public double X { get; set; }
-        public double Y { get; set; }
-        public double Z { get; set; }
+        public double DeltaX { get; set; } 
+        public double DeltaY { get; set; } 
+        public double DeltaZ { get; set; } 
+        public double DeltaZZ { get; set; }
     }
 }

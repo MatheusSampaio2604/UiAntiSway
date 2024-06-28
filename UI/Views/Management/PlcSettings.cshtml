@@ -35,7 +35,7 @@
 <div class="container mt-3 ">
     <div class="card d-flex">
         <div class="card-header text-center">
-            <h1>TAG SETTING</h1>
+            <h1>PLC SETTING</h1>
         </div>
         <div class="card-body">
             <form asp-action="PlcSettings" method="post">
@@ -58,7 +58,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label asp-for="Ip1" class="control-label"></label>
-                            <input asp-for="Ip1" class="form-control" />
+                            <input asp-for="Ip1" class="form-control"  required/>
                             <span asp-validation-for="Ip1" class="text-danger"></span>
                         </div>
                         <div class="form-group">
@@ -75,12 +75,12 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label asp-for="Rack" class="control-label"></label>
-                            <input asp-for="Rack" type="number" min="0" max="100" step="1" onkeydown="return false;" inputmode="numeric" class="form-control" />
+                            <input asp-for="Rack" type="number" min="0" max="100" step="1" onkeydown="return false;" inputmode="numeric" class="form-control" required />
                             <span asp-validation-for="Rack" class="text-danger"></span>
                         </div>
                         <div class="form-group">
                             <label asp-for="Slot" class="control-label"></label>
-                            <input asp-for="Slot" type="number" min="0" max="100" step="1" onkeydown="return false;" inputmode="numeric" class="form-control" />
+                            <input asp-for="Slot" type="number" min="0" max="100" step="1" onkeydown="return false;" inputmode="numeric" class="form-control" required />
                             <span asp-validation-for="Slot" class="text-danger"></span>
                         </div>
                     </div>
@@ -103,6 +103,8 @@
 </div>
 
 <script>
+   
+    //only for testConn
     document.getElementById('testConn').addEventListener('click', async function () {
         var btn = this;
         var counter = 15;
@@ -127,20 +129,9 @@
                 }
             });
 
-            if (!response.ok) {
-                throw new Error('Connection Error');
-            }
-
             clearInterval(interval);
+            buttonResultTestConnection(await response.json())
 
-            btn.value = 'Successfully';
-            btn.classList.remove('btn-outline-secondary', 'btn-warning', 'btn-danger');
-            btn.classList.add('btn-success');
-
-            setTimeout(function () {
-                btn.value = 'Test Connection';
-                btn.classList.remove('btn-success');
-            }, 5000);
         } catch (error) {
             clearInterval(interval);
 
@@ -153,6 +144,29 @@
                 btn.classList.remove('btn-warning', 'btn-success', 'btn-danger');
                 btn.classList.add('btn-outline-secondary');
             }, 5000);
+        }
+
+        function buttonResultTestConnection(resp) {
+            if (resp) {
+                btn.value = 'Successfully';
+                btn.classList.remove('btn-outline-secondary', 'btn-warning', 'btn-danger');
+                btn.classList.add('btn-success');
+
+                setTimeout(function () {
+                    btn.value = 'Test Connection';
+                    btn.classList.remove('btn-success');
+                }, 5000);
+            } else {
+                btn.value = 'Unsuccessfully';
+                btn.classList.remove('btn-outline-secondary', 'btn-success', 'btn-warning');
+                btn.classList.add('btn-danger');
+
+                setTimeout(function () {
+                    btn.value = 'Test Connection';
+                    btn.classList.remove('btn-warning', 'btn-success', 'btn-danger');
+                    btn.classList.add('btn-outline-secondary');
+                }, 5000);
+            }
         }
     });
 </script>

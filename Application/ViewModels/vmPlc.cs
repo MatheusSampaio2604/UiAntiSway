@@ -19,6 +19,6 @@ namespace Application.ViewModels
         public required string Type { get; set; }
 
         [DisplayName("Last value")]
-        public string? Value { get; set; }
+        public string? Value { get; set; } = "0";
     }
 }

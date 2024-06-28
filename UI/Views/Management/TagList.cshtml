@@ -69,7 +69,7 @@
                         <i class="fa fa-solid fa-plus"></i> Add new tag
                     </button>
                     <button class="btn btn-outline-warning get-updated-values">
-                        <i class="fa fa-refresh fa-spin"></i> Update all tag values
+                        <i class="fa fa-solid fa-rotate-right"></i> Update all tag values
                     </button>
                 </div>
             </div>
@@ -158,18 +158,18 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
-
             var table = new DataTable('#plcTable', {
                 "language": {
                     "url": "https://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/English.json",
                     "lengthMenu": "Mostrar _MENU_ registros por página",
                 },
-                "order": [[0, 'desc']],
+                "order": [[0, 'asc']],
                 "fixedHeader": true,
                 "pageLength": 10,
                 "responsive": true
             });
 
+            //update all tag values
             $('.get-updated-values').on('click', function () {
                 try {
                     var listAddress = [];
@@ -178,8 +178,6 @@
                         var address = $(this).find('td:nth-child(2)').text().trim();
                         listAddress.push(address);
                     });
-
-                    console.warn(listAddress);
 
                     $.ajax({
                         url: '@Url.Action("GetValueFromPlc")',
@@ -200,47 +198,22 @@
                 }
             });
 
-            function updateTableValues(data) {
-                $('#plcTable tbody tr').each(function () {
-                    var id = $(this).find('td:first').text().trim();
-                    var plc = data.find(x => x.id == id);
-
-                    if (plc) {
-                        if (plc.type == 'bool') {
-                            $(this).find('.edit-value').val(plc.value == 'true' ? 1 : 0);
-                        } else if (plc.type == 'double') {
-                            $(this).find('.edit-value').val(parseFloat(plc.value));
-                        } else {
-                            $(this).find('.edit-value').val(parseInt(plc.value, 10));
-                        }
-                    }
-                });
-            }
-
-
-
+            //update a new value in tag
             $('.set-value-button').on('click', function () {
                 var row = $(this).closest('tr');
                 var id = row.find('td:eq(0)').text();
                 var type = row.find('td:eq(3)').text();
                 var value = row.find('.edit-value').val();
 
-                if (type === "bool") {
+                if (type === "bool")
                     value = value === "1";
-                }
 
-                var list = [{
-                    Id: id,
-                    Type: type,
-                    Value: value
-                }]
+                var list = [{ Id: id, Type: type, Value: value }];
 
                 $.ajax({
                     url: '@Url.Action("SetValueToPlc")',
                     type: 'POST',
-                    data: {
-                        vmWrite: list
-                    },
+                    data: { vmWrite: list },
                     success: function (response) {
                         window.location.href = '@Url.Action("TagList", "Management")';
                     },
@@ -250,6 +223,7 @@
                 });
             });
 
+            //Open tag Detail
             $('.details-button').on('click', function () {
                 var row = $(this).closest('tr');
                 var id = row.find('td:eq(0)').text();
@@ -257,12 +231,9 @@
                 $.ajax({
                     url: '@Url.Action("EditTagInList")',
                     type: 'GET',
-                    data: {
-                        idTag: id
-                    },
+                    data: { idTag: id },
                     success: function (response) {
                         $('#detailsModal .modal-body').html(response);
-
                         $('#detailsModal').modal('show');
                     },
                     error: function (xhr, status, error) {
@@ -295,9 +266,7 @@
                     $.ajax({
                         url: '@Url.Action("DeleteTagInList")',
                         type: 'Delete',
-                        data: {
-                            id: id
-                        },
+                        data: { id: id },
                         success: function (response) {
                             window.location.href = '@Url.Action("TagList", "Management")';
                         },
@@ -307,6 +276,23 @@
                     });
                 }
             });
+
+            function updateTableValues(data) {
+                $('#plcTable tbody tr').each(function () {
+                    var id = $(this).find('td:first').text().trim();
+                    var plc = data.find(x => x.id == id);
+
+                    if (plc) {
+                        if (plc.type == 'bool') {
+                            $(this).find('.edit-value').val(plc.value == 'true' ? 1 : 0);
+                        } else if (plc.type == 'double') {
+                            $(this).find('.edit-value').val(parseFloat(plc.value));
+                        } else {
+                            $(this).find('.edit-value').val(parseInt(plc.value, 10));
+                        }
+                    }
+                });
+            }
         });
     </script>
 }
