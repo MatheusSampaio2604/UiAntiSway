@@ -1,12 +1,6 @@
-﻿using Application.Important_Area;
-using Application.Services.Interface;
+﻿using Application.Services.Interface;
 using Application.ViewModels;
 using Infra.RequestApi.Interface;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Services
 {
@@ -31,7 +25,7 @@ namespace Application.Services
         public async Task<vmCalibrationCamera> SetCalibrationCameraAsync(vmCalibrationCamera calibrationCamera)
         {
             var dados = await _GeneralApi.PostAsync<vmCalibrationCamera, dynamic>($"/v1", calibrationCamera);
-            
+
             return calibrationCamera;
         }
     }

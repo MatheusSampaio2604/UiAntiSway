@@ -2,7 +2,6 @@
 using Application.Services.Interface;
 using Application.ViewModels;
 using Infra.RequestApi.Interface;
-using System;
 
 namespace Application.Services
 {

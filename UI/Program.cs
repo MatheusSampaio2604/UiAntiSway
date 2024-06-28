@@ -1,12 +1,7 @@
 using Application.Services;
 using Application.Services.Interface;
-using Microsoft.Extensions.Configuration;
-using Application.Important_Area;
-using Infra.RequestApi.Interface;
 using Infra.RequestApi;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
+using Infra.RequestApi.Interface;
 
 namespace UI
 {

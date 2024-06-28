@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.ViewModels
 {
@@ -15,11 +10,11 @@ namespace Application.ViewModels
         [DisplayName("Name")]
         [Required(ErrorMessage = "*Necessary!")]
         public required string Name { get; set; }
-        
+
         [DisplayName("Address Plc")]
         [Required(ErrorMessage = "*Necessary!")]
         public required string AddressPlc { get; set; }
-        
+
         [Required(ErrorMessage = "*Necessary!")]
         public required string Type { get; set; }
 
