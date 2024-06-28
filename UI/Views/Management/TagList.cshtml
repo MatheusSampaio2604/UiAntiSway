@@ -157,7 +157,7 @@
 
 @section Scripts {
     <script>
-        $(document).ready(function () {
+        document.addEventListener('DOMContentLoaded', (event) => {
             var table = new DataTable('#plcTable', {
                 "language": {
                     "url": "https://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/English.json",
@@ -249,7 +249,6 @@
                     type: 'GET',
                     success: function (response) {
                         $('#detailsModal .modal-body').html(response);
-
                         $('#detailsModal').modal('show');
                     },
                     error: function (xhr, status, error) {

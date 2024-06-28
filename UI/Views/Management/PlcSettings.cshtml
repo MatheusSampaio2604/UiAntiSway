@@ -58,7 +58,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label asp-for="Ip1" class="control-label"></label>
-                            <input asp-for="Ip1" class="form-control"  required/>
+                            <input asp-for="Ip1" class="form-control" required />
                             <span asp-validation-for="Ip1" class="text-danger"></span>
                         </div>
                         <div class="form-group">
@@ -103,7 +103,10 @@
 </div>
 
 <script>
-   
+    document.addEventListener('DOMContentLoaded', (event) => {
+
+    });
+
     //only for testConn
     document.getElementById('testConn').addEventListener('click', async function () {
         var btn = this;
@@ -129,11 +132,24 @@
                 }
             });
 
-            clearInterval(interval);
-            buttonResultTestConnection(await response.json())
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message);
+            }
 
+            clearInterval(interval);
+            btn.value = 'Successfully';
+            btn.classList.remove('btn-outline-secondary', 'btn-warning', 'btn-danger');
+            btn.classList.add('btn-success');
+
+            setTimeout(function () {
+                btn.value = 'Test Connection';
+                btn.classList.remove('btn-success');
+            }, 5000);
         } catch (error) {
             clearInterval(interval);
+
+            console.warn(error);
 
             btn.value = 'Unsuccessfully';
             btn.classList.remove('btn-outline-secondary', 'btn-success', 'btn-warning');
@@ -144,29 +160,6 @@
                 btn.classList.remove('btn-warning', 'btn-success', 'btn-danger');
                 btn.classList.add('btn-outline-secondary');
             }, 5000);
-        }
-
-        function buttonResultTestConnection(resp) {
-            if (resp) {
-                btn.value = 'Successfully';
-                btn.classList.remove('btn-outline-secondary', 'btn-warning', 'btn-danger');
-                btn.classList.add('btn-success');
-
-                setTimeout(function () {
-                    btn.value = 'Test Connection';
-                    btn.classList.remove('btn-success');
-                }, 5000);
-            } else {
-                btn.value = 'Unsuccessfully';
-                btn.classList.remove('btn-outline-secondary', 'btn-success', 'btn-warning');
-                btn.classList.add('btn-danger');
-
-                setTimeout(function () {
-                    btn.value = 'Test Connection';
-                    btn.classList.remove('btn-warning', 'btn-success', 'btn-danger');
-                    btn.classList.add('btn-outline-secondary');
-                }, 5000);
-            }
         }
     });
 </script>

@@ -97,8 +97,13 @@
         async function fetchCameraValues() {
             try {
                 const response = await fetch('@Url.Action("VideoCamera")');
-                const data = await response.json();
+                
+                if (!response.ok) {
+                    const error = await response.text();
+                    throw new Error(error);
+                }
 
+                const data = await response.json();
                 document.getElementById('cameraFeed').src = data.cameraFeedUrl;
 
             } catch (error) {

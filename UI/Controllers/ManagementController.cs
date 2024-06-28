@@ -1,5 +1,6 @@
 ﻿using Application.Services.Interface;
 using Application.ViewModels;
+using Application.ViewModels.Error;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -36,7 +37,7 @@ namespace UI.Controllers
                 plcConnection = await _interConfigurationService.TestConnectionPlc();
                 return Ok(plcConnection);
             }
-            catch (Exception e) { return BadRequest(e.Message); }
+            catch (Exception e) { return BadRequest(new ErrorViewModel { Message = e.Message, Response = false }); }
         }
 
         /// <summary>
@@ -200,8 +201,15 @@ namespace UI.Controllers
         [HttpGet]
         public async Task<IActionResult> VideoCamera()
         {
-            //var data = await _interCalibrationService.GetVideoCameraAsync();
-            return Ok();
+            try
+            {
+                //var data = await _interCalibrationService.GetVideoCameraAsync();
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
 
