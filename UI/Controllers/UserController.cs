@@ -11,18 +11,21 @@ namespace UI.Controllers
     public class UserController : Controller
     {
         private readonly InterLoginService _interLoginService;
-        private readonly InterRegisterService _interRegisterService;
 
-        public UserController(InterLoginService interLoginService, InterRegisterService interRegisterService)
+        public UserController(InterLoginService interLoginService)
         {
             _interLoginService = interLoginService;
-            _interRegisterService = interRegisterService;
+        }
+
+        private void TempDataErrorMessage(string message)
+        {
+            TempData["ErrorMessage"] = message.Trim();
         }
 
         [HttpGet]
         public IActionResult Login()
         {
-            return View();
+            return View(new vmLoginUser());
         }
 
         [HttpPost]
@@ -30,22 +33,35 @@ namespace UI.Controllers
         {
             try
             {
-                var loginResult = await _interLoginService.LoginAsync(loginUser);
+                //var loginResult = await _interLoginService.LoginAsync(loginUser);
 
-                if (loginResult.Succeeded)
+                //if (loginResult.Succeeded)
+                //{
+                //    var cookieOptions = CreateCookieOptions();
+
+                //    CreateCookieUser(loginResult, cookieOptions);
+
+                //    return RedirectToAction("Index", "Home");
+                //}
+                //else
+                //    return Unauthorized(new { success = false, message = string.Join(", ", loginResult.Errors) });
+
+                if (loginUser != null && !String.IsNullOrEmpty(loginUser.UserName)
+                    && !String.IsNullOrEmpty(loginUser.Password) && loginUser.Password == "Janus90")
                 {
                     var cookieOptions = CreateCookieOptions();
 
-                    CreateCookieUser(loginResult, cookieOptions);
+                    Response.Cookies.Append("name", loginUser.UserName, cookieOptions);
 
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Monitoring", "Management");
                 }
-                else
-                    return Unauthorized(new { success = false, message = string.Join(", ", loginResult.Errors) });
+                else throw new Exception("User or Password is incorrect!");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { success = false, message = "An error occurred. Please try again later.", error = ex.Message });
+                TempDataErrorMessage(ex.Message);
+                return RedirectToAction("Login", "User");
+                //return StatusCode(500, new { success = false, message = "An error occurred. Please try again later.", error = ex.Message });
             }
         }
 
@@ -83,48 +99,8 @@ namespace UI.Controllers
             Response.Cookies.Delete("name");
             Response.Cookies.Delete("roles");
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Login", "User");
         }
 
-        [HttpGet]
-        public IActionResult Register()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Register(vmRegisterUser registerUser)
-        {
-            try
-            {
-                bool registerResult = await _interRegisterService.RegisterAsync(registerUser);
-
-                if (registerResult)
-                {
-                    vmLoginUser loginUser = new() { UserName = registerUser.Email, Password = registerUser.Password };
-
-                    LoginResult loginResult = await _interLoginService.LoginAsync(loginUser);
-
-                    if (loginResult.Succeeded)
-                    {
-                        var cookieOptions = CreateCookieOptions();
-
-                        CreateCookieUser(loginResult, cookieOptions);
-
-                        return RedirectToAction("Index", "Home");
-                    }
-                    else
-                    {
-                        return Unauthorized(new { success = false, message = string.Join(", ", loginResult.Errors) });
-                    }
-                }
-                else
-                    return BadRequest(new { success = false, message = string.Join(", ", registerResult) });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { success = false, message = "An error occurred. Please try again later.", error = ex.Message });
-            }
-        }
     }
 }

@@ -2,11 +2,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using UI.Models;
+using UI.Models.ActionsFilter;
 
 namespace UI.Controllers
 {
 
-    [AllowAnonymous]
+    [AuthorizeToken]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;

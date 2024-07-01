@@ -7,10 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis;
 using System.Reflection;
 using System.Text.Json.Serialization;
+using UI.Models.ActionsFilter;
 
 namespace UI.Controllers
 {
-    //[AuthorizeToken]
+    [AuthorizeToken]
     [AllowAnonymous]
     public class ManagementController : Controller
     {

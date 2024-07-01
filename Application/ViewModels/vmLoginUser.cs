@@ -2,8 +2,13 @@
 {
     public class vmLoginUser
     {
-        public required string UserName { get; set; }
-        public required string Password { get; set; }
+#if DEBUG
+        public string UserName { get; set; } = "Admin";
+        public string Password { get; set; } = "Admin";
+#elif RELEASE
+        public string? UserName { get; set; } = String.Empty;
+        public string? Password { get; set; } = String.Empty;
+#endif
     }
 
     public class LoginResult
