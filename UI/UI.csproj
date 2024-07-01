@@ -15,4 +15,6 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Application\Application.csproj" />
 	</ItemGroup>
+
+	<ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="https://json.schemastore.org/asmdef.json" /></VisualStudio></ProjectExtensions>
 </Project>

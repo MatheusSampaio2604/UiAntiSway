@@ -1,4 +1,5 @@
 ﻿using Application.Services.Interface;
+using Application.Services.Interfaces;
 using Application.ViewModels;
 using Application.ViewModels.Error;
 using Microsoft.AspNetCore.Authorization;
@@ -17,13 +18,15 @@ namespace UI.Controllers
     {
         private readonly InterCameraService _interCalibrationService;
         private readonly InterConfigurationService _interConfigurationService;
+        private readonly InterConfigureOptionsServices _configureOptionsServices;
 
         public List<vmPlc> vmPlcs = [];
 
-        public ManagementController(InterCameraService interCalibrationService, InterConfigurationService interConfigurationService)
+        public ManagementController(InterCameraService interCalibrationService, InterConfigurationService interConfigurationService, InterConfigureOptionsServices configureOptionsServices)
         {
             _interCalibrationService = interCalibrationService;
             _interConfigurationService = interConfigurationService;
+            _configureOptionsServices = configureOptionsServices;
         }
 
         /// <summary>
@@ -232,13 +235,8 @@ namespace UI.Controllers
         [HttpGet]
         public async Task<IActionResult> PlcSettings()
         {
-            ViewBag.Driver = new SelectList(new List<string> { "SIEMENS", "ROCKWELL" });
-            ViewBag.ListCpuType = new SelectList(new List<string>
-            {
-                "S7200", "Logo0BA8", "S7200Smart",
-                "S7300", "S7400", "S71200",
-                "S71500"
-            });
+            ViewBag.Driver = await _configureOptionsServices.GetDriversOptions();
+            ViewBag.ListCpuType = await _configureOptionsServices.GetCpuTypesOptions();
 
             vmPlcSettings plcSetting = await _interConfigurationService.GetSettingsPlc();
             return View(plcSetting);

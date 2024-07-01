@@ -24,5 +24,6 @@ namespace Application.ViewModels
         [DisplayName("Driver")]
         [Required(ErrorMessage = "Required!")]
         public required string Driver { get; set; }
+
     }
 }

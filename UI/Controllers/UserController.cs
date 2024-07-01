@@ -75,22 +75,22 @@ namespace UI.Controllers
             };
         }
 
-        private void CreateCookieUser(LoginResult loginResult, CookieOptions cookieOptions)
-        {
-            Response.Cookies.Append("token", loginResult.Token, cookieOptions);
-            Response.Cookies.Append("name", loginResult.Name, cookieOptions);
+        //private void CreateCookieUser(LoginResult loginResult, CookieOptions cookieOptions)
+        //{
+        //    Response.Cookies.Append("token", loginResult.Token, cookieOptions);
+        //    Response.Cookies.Append("name", loginResult.Name, cookieOptions);
 
-            var roles = GetRolesFromToken(loginResult.Token);
-            Response.Cookies.Append("roles", string.Join(",", roles), cookieOptions);
-        }
+        //    var roles = GetRolesFromToken(loginResult.Token);
+        //    Response.Cookies.Append("roles", string.Join(",", roles), cookieOptions);
+        //}
 
-        private IEnumerable<string> GetRolesFromToken(string token)
-        {
-            JwtSecurityTokenHandler handler = new();
-            var jwtToken = handler.ReadJwtToken(token);
-            var roles = jwtToken.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value);
-            return roles;
-        }
+        //private IEnumerable<string> GetRolesFromToken(string token)
+        //{
+        //    JwtSecurityTokenHandler handler = new();
+        //    var jwtToken = handler.ReadJwtToken(token);
+        //    var roles = jwtToken.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value);
+        //    return roles;
+        //}
 
         [HttpGet]
         public IActionResult Logout()

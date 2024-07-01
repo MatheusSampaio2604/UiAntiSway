@@ -45,7 +45,7 @@
                         <div class="form-group">
                             <label asp-for="Driver" class="control-label"></label>
                             <select asp-for="Driver" class="form-select bg-light text-dark" id="Brand"
-                                    asp-items="@(ViewBag.Driver as SelectList)"
+                                    asp-items="@(new SelectList(ViewBag.Driver , "Name", "Name"))"
                                     aria-describedby="ListCpuType">
                                 <option selected disabled value="">Select one</option>
                             </select>
@@ -63,7 +63,7 @@
                         <div class="form-group">
                             <label asp-for="CpuType" class="control-label"></label>
                             <select asp-for="CpuType" class="form-select bg-light text-dark" id="CpuType"
-                                    asp-items="@(ViewBag.ListCpuType as SelectList)"
+                                    asp-items="@(new SelectList(ViewBag.ListCpuType , "Name", "Name"))"
                                     aria-describedby="ListCpuType">
                                 <option selected disabled value="">Select one</option>
                             </select>
@@ -96,69 +96,70 @@
                 </div>
             </form>
         </div>
+
     </div>
 </div>
 
 @section Scripts {
-<script>
-    document.addEventListener('DOMContentLoaded', (event) => {
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
 
-    });
+        });
 
-    //only for testConn
-    document.getElementById('testConn').addEventListener('click', async function () {
-        var btn = this;
-        var counter = 15;
+        //only for testConn
+        document.getElementById('testConn').addEventListener('click', async function () {
+            var btn = this;
+            var counter = 15;
 
-        btn.value = 'Await ' + counter + '...';
-        btn.classList.remove('btn-outline-secondary', 'btn-warning', 'btn-success', 'btn-danger');
-        btn.classList.add('btn-warning');
-
-        var interval = setInterval(function () {
-            counter--;
             btn.value = 'Await ' + counter + '...';
-            if (counter <= 0) {
-                clearInterval(interval);
-            }
-        }, 1000);
+            btn.classList.remove('btn-outline-secondary', 'btn-warning', 'btn-success', 'btn-danger');
+            btn.classList.add('btn-warning');
 
-        try {
-            const response = await fetch('@Url.Action("TestConnectionPlc")', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
+            var interval = setInterval(function () {
+                counter--;
+                btn.value = 'Await ' + counter + '...';
+                if (counter <= 0) {
+                    clearInterval(interval);
                 }
-            });
+            }, 1000);
 
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.message);
+            try {
+                const response = await fetch('@Url.Action("TestConnectionPlc")', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message);
+                }
+
+                clearInterval(interval);
+                btn.value = 'Successfully';
+                btn.classList.remove('btn-outline-secondary', 'btn-warning', 'btn-danger');
+                btn.classList.add('btn-success');
+
+                setTimeout(function () {
+                    btn.value = 'Test Connection';
+                    btn.classList.remove('btn-success');
+                }, 5000);
+            } catch (error) {
+                clearInterval(interval);
+
+                console.warn(error);
+
+                btn.value = 'Unsuccessfully';
+                btn.classList.remove('btn-outline-secondary', 'btn-success', 'btn-warning');
+                btn.classList.add('btn-danger');
+
+                setTimeout(function () {
+                    btn.value = 'Test Connection';
+                    btn.classList.remove('btn-warning', 'btn-success', 'btn-danger');
+                    btn.classList.add('btn-outline-secondary');
+                }, 5000);
             }
-
-            clearInterval(interval);
-            btn.value = 'Successfully';
-            btn.classList.remove('btn-outline-secondary', 'btn-warning', 'btn-danger');
-            btn.classList.add('btn-success');
-
-            setTimeout(function () {
-                btn.value = 'Test Connection';
-                btn.classList.remove('btn-success');
-            }, 5000);
-        } catch (error) {
-            clearInterval(interval);
-
-            console.warn(error);
-
-            btn.value = 'Unsuccessfully';
-            btn.classList.remove('btn-outline-secondary', 'btn-success', 'btn-warning');
-            btn.classList.add('btn-danger');
-
-            setTimeout(function () {
-                btn.value = 'Test Connection';
-                btn.classList.remove('btn-warning', 'btn-success', 'btn-danger');
-                btn.classList.add('btn-outline-secondary');
-            }, 5000);
-        }
-    });
-</script>
+        });
+    </script>
 }

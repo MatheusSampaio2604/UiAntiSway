@@ -1,5 +1,6 @@
 using Application.Services;
 using Application.Services.Interface;
+using Application.Services.Interfaces;
 using Infra.RequestApi;
 using Infra.RequestApi.Interface;
 
@@ -21,7 +22,8 @@ namespace UI
             builder.Services.AddScoped<InterLoginService, LoginService>();
             builder.Services.AddScoped<InterCameraService, CameraService>();
             builder.Services.AddScoped<InterConfigurationService, ConfigurationService>();
-
+            builder.Services.AddScoped<InterConfigureOptionsServices, ConfigureOptionsService>();
+        
             builder.Services.AddCors(options =>
             {
                 options.AddDefaultPolicy(builder =>

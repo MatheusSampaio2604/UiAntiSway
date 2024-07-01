@@ -13,25 +13,9 @@
         margin: 0;
     }
 
-    #plcTable_paginate {
-        display: flex;
-        justify-content: space-between
-    }
-
-    #plcTable_info {
-        display: flex;
-        justify-content: center
-    }
-
     .dataTables_wrapper .dataTables_length,
     .dataTables_wrapper .dataTables_filter {
         margin-bottom: 10px;
-    }
-
-    .dataTables_wrapper .dataTables_length,
-    .dataTables_wrapper .dataTables_filter {
-        display: ruby-text;
-        width: auto;
     }
 
     .dataTables_wrapper .dataTables_info {
@@ -51,6 +35,11 @@
             margin: auto;
             display: block;
         }
+
+ /*    .dt-layout-row{
+        display: flex;
+        justify-content: space-between;
+    } */
 
 </style>
 
@@ -160,7 +149,7 @@
             var table = new DataTable('#plcTable', {
                 "language": {
                     "url": "https://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/English.json",
-                    "lengthMenu": "Mostrar _MENU_ registros por página",
+                    "lengthMenu": "Show _MENU_ records per page",
                 },
                 "order": [[0, 'asc']],
                 "fixedHeader": true,
