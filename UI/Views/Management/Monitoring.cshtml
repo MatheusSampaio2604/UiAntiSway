@@ -91,27 +91,29 @@
     </div>
 </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', (event) => {
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
 
-        async function fetchCameraValues() {
-            try {
-                const response = await fetch('@Url.Action("VideoCamera")');
-                
-                if (!response.ok) {
-                    const error = await response.text();
-                    throw new Error(error);
+            async function fetchCameraValues() {
+                try {
+                    const response = await fetch('@Url.Action("VideoCamera")');
+
+                    if (!response.ok) {
+                        const error = await response.text();
+                        throw new Error(error);
+                    }
+
+                    const data = await response.json();
+                    document.getElementById('cameraFeed').src = data.cameraFeedUrl;
+
+                } catch (error) {
+                    console.error('Error fetching Camera values: \n' + error);
                 }
-
-                const data = await response.json();
-                document.getElementById('cameraFeed').src = data.cameraFeedUrl;
-
-            } catch (error) {
-                console.error('Error fetching Camera values: \n' + error);
             }
-        }
 
-        fetchCameraValues();
-    });
+            fetchCameraValues();
+        });
 
-</script> 
+    </script>
+}

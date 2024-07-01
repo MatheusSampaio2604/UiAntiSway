@@ -80,11 +80,9 @@
                         <li class="nav-item">
                             <a class="nav-link " asp-area="" asp-controller="Management" asp-action="Monitoring"><i class="fa fa-solid fa-desktop"></i> Monitoring</a>
                         </li>
-
                         <li class="nav-item">
                             <a class="nav-link " asp-area="" asp-controller="Management" asp-action="Calibration"><i class="fa fa-solid fa-desktop"></i> Calibration</a>
                         </li>
-
                         <li>
                             <a class="nav-link " asp-area="" asp-controller="Management" asp-action="TagList"><i class="fa fa-solid fa-list"></i> Tag Setting</a>
                         </li>
@@ -98,13 +96,13 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="User" asp-action="Login" title="Login user">Login</a>
                         </li>
-                     @*    <li class="nav-item">
-                            <a class="nav-link btn btn-link text-dark rounded-circle" asp-area="" asp-controller="User" asp-action="Logout" title="Logout">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
-                                    <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z" />
-                                    <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z" />
-                                </svg>
-                            </a>
+                        @*    <li class="nav-item">
+                        <a class="nav-link btn btn-link text-dark rounded-circle" asp-area="" asp-controller="User" asp-action="Logout" title="Logout">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z" />
+                        <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z" />
+                        </svg>
+                        </a>
                         </li> *@
                     </ul>
                 </div>
@@ -131,7 +129,7 @@
             </div>
             TempData["ErrorMessage"] = null;
         }
-        <main role="main" class="">
+        <main role="main">
             @RenderBody()
         </main>
     </div>
@@ -143,20 +141,20 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
-
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
-<script>
-    function closeModal() {
-        $('#detailsModal').modal('hide');
-    }
+@section Scripts {
+    <script>
+        function closeModal() {
+            $('#detailsModal').modal('hide');
+        }
 
-    setTimeout(function () {
-        document.querySelectorAll('.alert').forEach(alert => alert.remove());
-    }, 10000);
-</script>
+        setTimeout(function () {
+            document.querySelectorAll('.alert').forEach(alert => alert.remove());
+        }, 10000);
+    </script>
+}

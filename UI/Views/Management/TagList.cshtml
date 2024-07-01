@@ -51,6 +51,7 @@
             margin: auto;
             display: block;
         }
+
 </style>
 
 <div class="container mt-5 mb-5">
@@ -76,8 +77,8 @@
 
             @if (Model.Count > 0)
             {
-                <table id="plcTable" class="table table-striped table-bordered dt-responsive nowrap" style="width:100%">
-                    <thead>
+                <table id="plcTable" class="table table-striped table-responsive table-hover table-bordered  dt-responsive nowrap" style="width:100%">
+                    <thead class="table-active">
                         <tr>
                             <th hidden>Id</th>
                             <th hidden>Address</th>
@@ -100,7 +101,6 @@
                                         if (plc.Type == "bool")
                                         {
                                             int value = plc.Value.Equals("true") ? 1 : 0;
-
                                             <input type="number" class="form-control edit-value" min="0" max="1" step="1" onkeydown="return false;" value="@value" />
                                         }
                                         else if (plc.Type.Equals("int"))
@@ -130,7 +130,6 @@
                     <p class="text-center">Not Found Tags</p>
                     <div class="row col-md-3 mx-auto">
                         <button class="btn btn-info add-button">Add tag</button>
-
                     </div>
                 </div>
             }
@@ -165,34 +164,31 @@
                 },
                 "order": [[0, 'asc']],
                 "fixedHeader": true,
-                "pageLength": 10,
+                "pageLength": 15,
                 "responsive": true
             });
 
             //update all tag values
-            $('.get-updated-values').on('click', function () {
+            document.querySelector('.get-updated-values').addEventListener('click', async function () {
                 try {
                     var listAddress = [];
 
-                    $('#plcTable tbody tr').each(function () {
-                        var address = $(this).find('td:nth-child(2)').text().trim();
+                    document.querySelectorAll('#plcTable tbody tr').forEach(function (row) {
+                        var address = row.querySelector('td:nth-child(2)').textContent.trim();
                         listAddress.push(address);
                     });
 
                     $.ajax({
                         url: '@Url.Action("GetValueFromPlc")',
                         type: 'POST',
-                        data: {
-                            address: listAddress
-                        },
+                        data: { address: listAddress },
                         success: function (response) {
                             updateTableValues(response);
                         },
                         error: function (xhr, status, error) {
-
+                            console.error('Error fetching PLC values:', error)
                         }
                     });
-
                 } catch (error) {
                     console.error('Error fetching PLC values:', error)
                 }

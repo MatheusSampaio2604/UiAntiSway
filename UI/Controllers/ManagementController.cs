@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis;
 using System.Reflection;
+using System.Text.Json.Serialization;
 
 namespace UI.Controllers
 {
@@ -83,7 +84,6 @@ namespace UI.Controllers
                 bool resp = await _interConfigurationService.AddTagInList(listPlc);
 
                 TempDataRequest(resp);
-
                 return Redirect("TagList");
             }
             catch { return Redirect("TagList"); }
@@ -145,7 +145,7 @@ namespace UI.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Opens a view of the last calibration performed and returns these values
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -162,9 +162,8 @@ namespace UI.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Submit a request to perform a calibration
         /// </summary>
-        /// <param name="calibrationCamera"></param>
         /// <returns></returns>
         [HttpGet]
         //[AuthorizeRoles("Admin")]
@@ -179,7 +178,7 @@ namespace UI.Controllers
         }
 
         /// <summary>
-        /// 
+        /// searches for a last performed calibration and return those values
         /// </summary>
         /// <returns></returns>
         //[AuthorizeRoles("User", "Admin")]
@@ -195,7 +194,7 @@ namespace UI.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Play a camera antisway
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -274,11 +273,51 @@ namespace UI.Controllers
                 TempData["ErrorMessage"] = "Error, not saved!";
         }
 
+        private void TempDataErrorMessage(string message)
+        {
+            TempData["ErrorMessage"] = message.Trim();
+        }
+
         /// <summary>
         /// Send a new value to tag
         /// </summary>
         /// <param name="vmWrite"></param>
         /// <returns></returns>
+        //[HttpPost]
+        //public async Task<IActionResult> SetValueToPlc(List<vmWritePlc> vmWrite)
+        //{
+        //    if (vmWrite == null || !vmWrite.Any())
+        //        return BadRequest("No data received.");
+        //    try
+        //    {
+        //        List<vmApiRequestWritePlc> vmApiRequest = [];
+        //        foreach (var item in vmWrite)
+        //        {
+        //            var plcData = await _interConfigurationService.DetailTagInList(item.Id);
+        //            vmApiRequest.Add(new vmApiRequestWritePlc
+        //            {
+        //                AddressPlc = plcData.AddressPlc,
+        //                Type = item.Type,
+        //                Value = item.Value,
+        //            });
+        //        }
+        //        var resp = await _interConfigurationService.WritePlcAsync(vmApiRequest);
+
+        //        if (resp)
+        //            foreach (var item in vmWrite)
+        //            {
+        //                var plcData = await _interConfigurationService.DetailTagInList(item.Id);
+        //                plcData.Value = item.Value;
+        //                await _interConfigurationService.UpdateTagInList(plcData);
+        //            }
+
+        //        TempDataRequest(resp);
+
+        //        return resp ? Ok(resp) : BadRequest(resp);
+        //    }
+        //    catch { return BadRequest(false); }
+        //}
+
         [HttpPost]
         public async Task<IActionResult> SetValueToPlc(List<vmWritePlc> vmWrite)
         {
@@ -286,67 +325,107 @@ namespace UI.Controllers
                 return BadRequest("No data received.");
             try
             {
-                List<vmApiRequestWritePlc> vmApiRequest = [];
-                foreach (var item in vmWrite)
+                List<Task<vmApiRequestWritePlc>> listValue = vmWrite.Select(async item =>
                 {
-                    var plcData = await _interConfigurationService.DetailTagInList(item.Id);
-                    vmApiRequest.Add(new vmApiRequestWritePlc
+                    vmPlc plcData = await _interConfigurationService.DetailTagInList(item.Id);
+                    return new vmApiRequestWritePlc
                     {
                         AddressPlc = plcData.AddressPlc,
                         Type = item.Type,
                         Value = item.Value,
-                    });
-                }
-                var resp = await _interConfigurationService.WritePlcAsync(vmApiRequest);
+                    };
+                }).ToList();
+
+                vmApiRequestWritePlc[] vmApiRequest = await Task.WhenAll(listValue);
+                bool resp = await _interConfigurationService.WritePlcAsync([.. vmApiRequest]);
+
                 if (resp)
                 {
-                    foreach (var item in vmWrite)
+                    IEnumerable<Task> updateList = vmWrite.Select(async item =>
                     {
-                        var plcData = await _interConfigurationService.DetailTagInList(item.Id);
+                        vmPlc plcData = await _interConfigurationService.DetailTagInList(item.Id);
                         plcData.Value = item.Value;
                         await _interConfigurationService.UpdateTagInList(plcData);
-                    }
+                    });
+                    await Task.WhenAll(updateList);
                 }
-                TempDataRequest(resp);
 
+                TempDataRequest(resp);
                 return resp ? Ok(resp) : BadRequest(resp);
             }
-            catch { return BadRequest(false); }
+            catch (Exception ex)
+            {
+                return BadRequest(false);
+            }
         }
+
 
         /// <summary>
         /// get a last value from tag
         /// </summary>
         /// <param name="address"></param>
         /// <returns></returns>
+        //[HttpPost]
+        //public async Task<IActionResult> GetValueFromPlc(List<string> address)
+        //{
+        //    if (address.Count == 0)
+        //        return BadRequest("No data received.");
+        //    try
+        //    {
+        //        List<vmPlc> list = await _interConfigurationService.GetListPlc();
+        //        foreach (var item in address)
+        //        {
+        //            string resp = await _interConfigurationService.ReadPlcAsync(item);
+        //            resp = !String.IsNullOrEmpty(resp) ? resp : "0";
+
+        //            vmPlc? plcToUpdate = list.FirstOrDefault(x => x.AddressPlc == item);
+
+        //            if (plcToUpdate is not null)
+        //            {
+        //                if (plcToUpdate.Type == "bool")
+        //                    plcToUpdate.Value = resp == "1" ? "true" : "false";
+        //                else
+        //                    plcToUpdate.Value = resp;
+
+        //                await _interConfigurationService.UpdateTagInList(plcToUpdate);
+        //            }
+        //        }
+        //        return Ok(list);
+        //    }
+        //    catch { return RedirectToAction("TagList"); }
+        //}
         [HttpPost]
         public async Task<IActionResult> GetValueFromPlc(List<string> address)
         {
-            if (address.Count == 0)
-                return BadRequest("No data received.");
+            if (address == null || !address.Any())
+                return NotFound("No data received.");
             try
             {
                 List<vmPlc> list = await _interConfigurationService.GetListPlc();
-                foreach (var item in address)
+
+                List<Task> tasks = address.Select(async item =>
                 {
-                    string resp = await _interConfigurationService.ReadPlcAsync(item);
-                    resp = String.IsNullOrEmpty(resp) ? "0" : resp;
+                    string? resp = await _interConfigurationService.ReadPlcAsync(item);
+                    resp = !string.IsNullOrEmpty(resp) ? resp : "0";
 
                     vmPlc? plcToUpdate = list.FirstOrDefault(x => x.AddressPlc == item);
 
-                    if (plcToUpdate is not null)
+                    if (plcToUpdate != null)
                     {
-                        if (plcToUpdate.Type == "bool")
-                            plcToUpdate.Value = resp == "1" ? "true" : "false";
-                        else
-                            plcToUpdate.Value = resp;
-
+                        plcToUpdate.Value = plcToUpdate.Type == "bool" ? (resp == "1" ? "true" : "false") : resp;
                         await _interConfigurationService.UpdateTagInList(plcToUpdate);
                     }
-                }
+                }).ToList();
+                await Task.WhenAll(tasks);
+
                 return Ok(list);
             }
-            catch { return RedirectToAction("TagList"); }
+            catch (Exception ex)
+            {
+                TempDataErrorMessage(ex.Message);
+                return RedirectToAction("TagList");
+            }
         }
+
     }
 }

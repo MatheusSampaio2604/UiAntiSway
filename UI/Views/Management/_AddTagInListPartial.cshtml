@@ -1,5 +1,9 @@
 ﻿@model Application.ViewModels.vmPlc
 
+@{
+    Layout = null;
+}
+
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-12">
@@ -36,52 +40,3 @@
         </div>
     </div>
 </div>
-
-@section Scripts {
-    <script>
-        $(document).ready(function () {
-            let originalType = $('#Type').val();
-
-            let $valueInput = $('.Value');
-
-            $('#Type').off('change').on('change', function () {
-                var newType = $(this).val();
-
-                if (newType !== originalType) {
-                    $valueInput.removeAttr('min max step onkeydown value');
-
-                    $valueInput.val('');
-
-                    if (newType == 'int') {
-                        $valueInput.attr({
-                            'type': 'number',
-                            'min': '0',
-                            'max': '999999',
-                            'step': '1',
-                            'onkeydown': 'return true;'
-                        });
-                        $valueInput.val('0');
-                    } else if (newType == 'double') {
-                        $valueInput.attr({
-                            'type': 'number',
-                            'min': '0',
-                            'step': '0.1',
-                            'onkeydown': 'return true;'
-                        });
-                        $valueInput.val('0.1');
-                    } else if (newType == 'bool') {
-                        $valueInput.attr({
-                            'type': 'number',
-                            'min': '0',
-                            'max': '1',
-                            'step': '1',
-                            'onkeydown': 'return false;'
-                        });
-                        $valueInput.val('1');
-                    }
-                }
-            });
-        });
-
-    </script>
-}

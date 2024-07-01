@@ -43,7 +43,7 @@
         <div class="row text-center">
             <h3>Delta</h3>
         </div>
-        <form method="post">
+        <form method="get" asp-action="ExecuteCalibration">
             <div class="row text-center">
                 <div class="col-md-6 ">
                     <div class="form-group">
@@ -87,8 +87,10 @@
     </div>
 </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', (event) => {
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
 
-    });
-</script>
+        });
+    </script>
+}
